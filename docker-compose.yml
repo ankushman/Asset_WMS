@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: ennea_postgres
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgrespassword
+      POSTGRES_DB: ennea_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ennea_wms_app
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      DATABASE_URL: "postgresql://postgres:postgrespassword@postgres:5432/ennea_db?schema=public"
+      JWT_SECRET: "ennea_sangkaj_enterprise_secret_key_2026_super_secure"
+      NEXT_PUBLIC_APP_NAME: "Ennea – Sangkaj WMS"
+    depends_on:
+      - postgres
+
+volumes:
+  postgres_data:

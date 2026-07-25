@@ -1,0 +1,751 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum Role {
+  SUPER_ADMIN
+  COMPANY_ADMIN
+  WAREHOUSE_MANAGER
+  SUPERVISOR
+  INVENTORY_EXECUTIVE
+  PICKER
+  PACKER
+  VIEWER
+}
+
+enum CompanyStatus {
+  ACTIVE
+  INACTIVE
+  SUSPENDED
+}
+
+enum WarehouseStatus {
+  ACTIVE
+  INACTIVE
+  UNDER_MAINTENANCE
+}
+
+enum AssetCondition {
+  AVAILABLE
+  IN_USE
+  MAINTENANCE
+  DISPOSED
+}
+
+enum InventoryStatus {
+  IN_STOCK
+  LOW_STOCK
+  OUT_OF_STOCK
+  EXPIRED
+  DISCONTINUED
+}
+
+enum InboundStepName {
+  VEHICLE_REPORTING
+  DOCK_ALLOCATION
+  UNLOAD
+  INSPECTION
+  COUNTING
+  GRN
+  STAGING
+  PUT_AWAY
+  COMPLETED
+}
+
+enum OutboundStepName {
+  INVOICE
+  PICKING
+  PACKING
+  STAGING
+  GATE_PASS
+  DISPATCH
+  COMPLETED
+}
+
+enum PickingType {
+  CASE
+  BATCH
+  LOOSE
+  PALLET
+  BOX
+}
+
+enum WorkflowStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+  ON_HOLD
+  CANCELLED
+}
+
+enum NotificationType {
+  ASSET_ASSIGNED
+  LOW_STOCK
+  INBOUND_COMPLETED
+  OUTBOUND_COMPLETED
+  USER_CREATED
+  WAREHOUSE_CREATED
+  SYSTEM_ALERT
+  SLA_BREACH
+  AI_ALERT
+}
+
+enum TripStatus {
+  SCHEDULED
+  GATE_OUT
+  IN_TRANSIT
+  DELIVERED
+  DELAYED
+  COMPLETED
+}
+
+enum EquipmentType {
+  FORKLIFT
+  REACH_TRUCK
+  HAND_PALLET
+  STACKER
+  BATTERY_UNIT
+  DOCK_EQUIPMENT
+  SCANNER
+}
+
+enum ApprovalCategory {
+  ASSET_PURCHASE
+  ASSET_DISPOSAL
+  INVENTORY_ADJUSTMENT
+  STOCK_TRANSFER
+  USER_CREATION
+  WAREHOUSE_CREATION
+  LEAVE_REQUEST
+  MAINTENANCE_REQUEST
+}
+
+enum ApprovalStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  CANCELLED
+}
+
+model Company {
+  id         String        @id @default(uuid())
+  name       String
+  gstNumber  String        @unique
+  address    String
+  phone      String
+  email      String
+  logo       String?
+  status     CompanyStatus @default(ACTIVE)
+
+  warehouses Warehouse[]
+  users      User[]
+
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
+
+  @@map("companies")
+}
+
+model Warehouse {
+  id           String          @id @default(uuid())
+  code         String          @unique
+  name         String
+  address      String
+  city         String
+  state        String
+  country      String          @default("India")
+  pinCode      String
+  capacity     Int             @default(10000)
+  area         Float           @default(5000)
+  workingHours String          @default("08:00 AM - 08:00 PM")
+  rentalCost   Float           @default(0.0)
+  status       WarehouseStatus @default(ACTIVE)
+
+  companyId String
+  company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  managerId String?
+  manager   User?   @relation("WarehouseManager", fields: [managerId], references: [id], onDelete: SetNull)
+
+  users          User[]           @relation("UserWarehouse")
+  assets         Asset[]
+  inventoryItems InventoryItem[]
+  inboundOrders  InboundShipment[]
+  outboundOrders OutboundOrder[]
+  equipments     Equipment[]
+  deliveryTrips  DeliveryTrip[]
+  kpis           KpiDefinition[]
+  slas           SlaConfiguration[]
+  costs          CostRecord[]
+  iotDevices     IotDevice[]
+
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
+
+  @@map("warehouses")
+}
+
+model User {
+  id            String   @id @default(uuid())
+  email         String   @unique
+  passwordHash  String
+  name          String
+  phone         String?
+  avatar        String?
+  role          Role     @default(VIEWER)
+  status        Boolean  @default(true)
+  emailVerified Boolean  @default(false)
+  resetToken    String?
+
+  companyId String?
+  company   Company? @relation(fields: [companyId], references: [id], onDelete: SetNull)
+
+  warehouseId String?
+  warehouse   Warehouse? @relation("UserWarehouse", fields: [warehouseId], references: [id], onDelete: SetNull)
+
+  managedWarehouses Warehouse[]       @relation("WarehouseManager")
+  assignedAssets    Asset[]           @relation("AssignedEmployee")
+  assetHistories    AssetHistory[]    @relation("PerformedUser")
+  inboundSteps      InboundStep[]     @relation("StepOperator")
+  outboundSteps     OutboundStep[]    @relation("StepPicker")
+  notifications     Notification[]
+  auditLogs         AuditLog[]
+  approvalRequests  ApprovalRequest[] @relation("Requestor")
+  approvalDecisions ApprovalRequest[] @relation("Approver")
+  attendances       Attendance[]
+  equipmentOps      Equipment[]       @relation("EquipmentOperator")
+  documents         DocumentRecord[]  @relation("DocumentUploadedBy")
+
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
+
+  @@map("users")
+}
+
+model AssetCategory {
+  id          String   @id @default(uuid())
+  name        String   @unique
+  description String?
+  assets      Asset[]
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("asset_categories")
+}
+
+model Asset {
+  id             String         @id @default(uuid())
+  assetCustomId  String         @unique @map("asset_custom_id")
+  name           String
+  barcode        String         @unique
+  qrCode         String         @unique
+  categoryName   String
+  category       AssetCategory  @relation(fields: [categoryName], references: [name])
+  serialNumber   String         @unique
+  purchaseDate   DateTime
+  purchaseCost   Float
+  vendor         String
+  warrantyExpiry DateTime
+  image          String?
+  condition      AssetCondition @default(AVAILABLE)
+
+  warehouseId String
+  warehouse   Warehouse @relation(fields: [warehouseId], references: [id], onDelete: Cascade)
+
+  assignedEmployeeId String?
+  assignedEmployee   User?   @relation("AssignedEmployee", fields: [assignedEmployeeId], references: [id], onDelete: SetNull)
+
+  history AssetHistory[]
+
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
+
+  @@map("assets")
+}
+
+model AssetHistory {
+  id          String   @id @default(uuid())
+  assetId     String
+  asset       Asset    @relation(fields: [assetId], references: [id], onDelete: Cascade)
+  actionType  String
+  description String
+  userId      String?
+  performedBy User?    @relation("PerformedUser", fields: [userId], references: [id], onDelete: SetNull)
+
+  createdAt DateTime @default(now())
+
+  @@map("asset_histories")
+}
+
+model InventoryItem {
+  id          String          @id @default(uuid())
+  sku         String          @unique
+  barcode     String          @unique
+  qrCode      String          @unique
+  productName String
+  category    String
+  brand       String
+  batchNumber String
+  quantity    Int             @default(0)
+  reserved    Int             @default(0)
+  available   Int             @default(0)
+  damaged     Int             @default(0)
+  minStock    Int             @default(10)
+  maxStock    Int             @default(1000)
+  rack        String
+  shelf       String
+  bin         String
+  supplier    String
+  status      InventoryStatus @default(IN_STOCK)
+
+  warehouseId String
+  warehouse   Warehouse @relation(fields: [warehouseId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
+
+  @@map("inventory_items")
+}
+
+model InboundShipment {
+  id            String         @id @default(uuid())
+  shipmentCode  String         @unique @map("shipment_code")
+  supplierName  String
+  vehicleNumber String
+  dockNumber    String?
+  totalItems    Int            @default(0)
+  status        WorkflowStatus @default(IN_PROGRESS)
+
+  warehouseId String
+  warehouse   Warehouse @relation(fields: [warehouseId], references: [id], onDelete: Cascade)
+
+  steps InboundStep[]
+
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
+
+  @@map("inbound_shipments")
+}
+
+model InboundStep {
+  id          String          @id @default(uuid())
+  inboundId   String
+  inbound     InboundShipment @relation(fields: [inboundId], references: [id], onDelete: Cascade)
+  stepName    InboundStepName
+  stepOrder   Int
+  status      WorkflowStatus  @default(PENDING)
+  remarks     String?
+  progress    Int             @default(0)
+
+  operatorId String?
+  operator   User?   @relation("StepOperator", fields: [operatorId], references: [id], onDelete: SetNull)
+
+  timestamp DateTime @default(now())
+
+  @@map("inbound_steps")
+}
+
+model OutboundOrder {
+  id          String         @id @default(uuid())
+  orderCode   String         @unique @map("order_code")
+  customer    String
+  invoiceNo   String         @unique
+  pickingType PickingType    @default(BOX)
+  totalItems  Int            @default(0)
+  status      WorkflowStatus @default(IN_PROGRESS)
+
+  warehouseId String
+  warehouse   Warehouse @relation(fields: [warehouseId], references: [id], onDelete: Cascade)
+
+  steps OutboundStep[]
+
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
+
+  @@map("outbound_orders")
+}
+
+model OutboundStep {
+  id         String           @id @default(uuid())
+  outboundId String
+  outbound   OutboundOrder    @relation(fields: [outboundId], references: [id], onDelete: Cascade)
+  stepName   OutboundStepName
+  stepOrder  Int
+  status     WorkflowStatus   @default(PENDING)
+  remarks    String?
+  progress   Int              @default(0)
+
+  operatorId String?
+  operator   User?   @relation("StepPicker", fields: [operatorId], references: [id], onDelete: SetNull)
+
+  timestamp DateTime @default(now())
+
+  @@map("outbound_steps")
+}
+
+model TransportVendor {
+  id        String   @id @default(uuid())
+  name      String
+  code      String   @unique
+  phone     String
+  email     String
+  rating    Float    @default(4.5)
+  vehicles  Vehicle[]
+  trips     DeliveryTrip[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("transport_vendors")
+}
+
+model Vehicle {
+  id             String          @id @default(uuid())
+  vehicleNumber  String          @unique
+  type           String
+  capacityTons   Float
+  fuelType       String          @default("Diesel")
+  documentsCheck Boolean         @default(true)
+  insuranceNo    String
+  fitnessExpiry  DateTime
+  vendorId       String
+  vendor         TransportVendor @relation(fields: [vendorId], references: [id], onDelete: Cascade)
+
+  trips DeliveryTrip[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("vehicles")
+}
+
+model Driver {
+  id            String   @id @default(uuid())
+  name          String
+  licenseNumber String   @unique
+  phone         String
+  rating        Float    @default(4.8)
+  trips         DeliveryTrip[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("drivers")
+}
+
+model DeliveryTrip {
+  id             String          @id @default(uuid())
+  tripNumber     String          @unique
+  warehouseId    String
+  warehouse      Warehouse       @relation(fields: [warehouseId], references: [id], onDelete: Cascade)
+  vendorId       String
+  vendor         TransportVendor @relation(fields: [vendorId], references: [id], onDelete: Cascade)
+  vehicleId      String
+  vehicle        Vehicle         @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+  driverId       String
+  driver         Driver          @relation(fields: [driverId], references: [id], onDelete: Cascade)
+  customerName   String
+  destination    String
+  dispatchTime   DateTime
+  expectedArrival DateTime
+  actualArrival  DateTime?
+  distanceKm     Float
+  status         TripStatus      @default(SCHEDULED)
+  delayReason    String?
+  podUrl         String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("delivery_trips")
+}
+
+model Shift {
+  id        String   @id @default(uuid())
+  name      String
+  startTime String
+  endTime   String
+  attendances Attendance[]
+
+  createdAt DateTime @default(now())
+
+  @@map("shifts")
+}
+
+model Attendance {
+  id          String   @id @default(uuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  shiftId     String
+  shift       Shift    @relation(fields: [shiftId], references: [id], onDelete: Cascade)
+  date        DateTime
+  checkIn     DateTime
+  checkOut    DateTime?
+  overtimeHrs Float    @default(0.0)
+  directQty   Int      @default(0)
+  status      String   @default("PRESENT")
+
+  createdAt DateTime @default(now())
+
+  @@map("attendances")
+}
+
+model Equipment {
+  id             String        @id @default(uuid())
+  equipmentCode  String        @unique
+  name           String
+  type           EquipmentType
+  warehouseId    String
+  warehouse      Warehouse     @relation(fields: [warehouseId], references: [id], onDelete: Cascade)
+  batteryStatus  Int           @default(100)
+  healthStatus   String        @default("EXCELLENT")
+  hoursUsed      Float         @default(0)
+  downtimeHours  Float         @default(0)
+  operatorId     String?
+  operator       User?         @relation("EquipmentOperator", fields: [operatorId], references: [id], onDelete: SetNull)
+
+  maintenances EquipmentMaintenance[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("equipments")
+}
+
+model EquipmentMaintenance {
+  id          String    @id @default(uuid())
+  equipmentId String
+  equipment   Equipment @relation(fields: [equipmentId], references: [id], onDelete: Cascade)
+  serviceType String
+  technician  String
+  cost        Float
+  partsUsed   String
+  downtimeHrs Float
+  completedAt DateTime?
+
+  createdAt DateTime @default(now())
+
+  @@map("equipment_maintenances")
+}
+
+model KpiDefinition {
+  id          String   @id @default(uuid())
+  name        String   @unique
+  formula     String
+  target      Float
+  actual      Float    @default(0.0)
+  unit        String
+  frequency   String
+  warehouseId String
+  warehouse   Warehouse @relation(fields: [warehouseId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("kpi_definitions")
+}
+
+model SlaConfiguration {
+  id           String   @id @default(uuid())
+  customerName String
+  activity     String
+  targetHours  Float
+  toleranceHrs Float
+  penaltyFee   Float
+  priority     String   @default("HIGH")
+  warehouseId  String
+  warehouse    Warehouse @relation(fields: [warehouseId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@map("sla_configurations")
+}
+
+model ApprovalRequest {
+  id           String           @id @default(uuid())
+  category     ApprovalCategory
+  title        String
+  amount       Float?
+  requestorId  String
+  requestor    User             @relation("Requestor", fields: [requestorId], references: [id], onDelete: Cascade)
+  approverId   String?
+  approver     User?            @relation("Approver", fields: [approverId], references: [id], onDelete: SetNull)
+  status       ApprovalStatus   @default(PENDING)
+  comments     String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("approval_requests")
+}
+
+model CostRecord {
+  id           String    @id @default(uuid())
+  category     String
+  amount       Float
+  costPerUnit  Float
+  warehouseId  String
+  warehouse    Warehouse @relation(fields: [warehouseId], references: [id], onDelete: Cascade)
+  recordedDate DateTime  @default(now())
+
+  @@map("cost_records")
+}
+
+model CalendarEvent {
+  id          String   @id @default(uuid())
+  title       String
+  eventType   String
+  startDate   DateTime
+  endDate     DateTime
+  description String?
+
+  createdAt DateTime @default(now())
+
+  @@map("calendar_events")
+}
+
+model Notification {
+  id        String           @id @default(uuid())
+  userId    String
+  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title     String
+  message   String
+  type      NotificationType @default(SYSTEM_ALERT)
+  isRead    Boolean          @default(false)
+  link      String?
+
+  createdAt DateTime @default(now())
+
+  @@map("notifications")
+}
+
+model AuditLog {
+  id        String   @id @default(uuid())
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  action    String
+  entity    String
+  entityId  String?
+  details   String?
+  ipAddress String?
+  oldValue  String?
+  newValue  String?
+
+  createdAt DateTime @default(now())
+
+  @@map("audit_logs")
+}
+
+// ==================== PHASE 3 EXTENSIONS ====================
+
+model AiForecast {
+  id             String   @id @default(uuid())
+  category       String   // INVENTORY_DEMAND, EQUIPMENT_RUL, DELIVERY_DELAY, WORKFORCE_SHIFT
+  metricName     String
+  predictedValue String
+  confidenceScore Float   @default(95.0)
+  targetDate     DateTime
+  createdAt      DateTime @default(now())
+
+  @@map("ai_forecasts")
+}
+
+model AiRecommendation {
+  id             String   @id @default(uuid())
+  category       String   // INVENTORY, MANPOWER, MAINTENANCE, TRANSPORTATION, STORAGE
+  title          String
+  reason         String
+  expectedImpact String
+  confidenceScore Float   @default(92.0)
+  priority       String   @default("HIGH") // CRITICAL, HIGH, MEDIUM
+  costSavings    Float?
+
+  createdAt DateTime @default(now())
+
+  @@map("ai_recommendations")
+}
+
+model WorkflowRule {
+  id        String   @id @default(uuid())
+  name      String
+  trigger   String   // LOW_STOCK, SLA_BREACH, MAINTENANCE_DUE, DELAYED_SHIPMENT
+  condition String
+  action    String   // NOTIFY_MANAGER, CREATE_PURCHASE_REQ, ESCALATE_TICKET, NOTIFY_CUSTOMER
+  isActive  Boolean  @default(true)
+
+  createdAt DateTime @default(now())
+
+  @@map("workflow_rules")
+}
+
+model DocumentRecord {
+  id          String   @id @default(uuid())
+  title       String
+  category    String   // INVOICE, PO, GRN, POD, WARRANTY, INSPECTION
+  fileUrl     String
+  fileSize    String
+  version     String   @default("v1.0")
+  ocrStatus   String   @default("VERIFIED") // VERIFIED, PROCESSING, PENDING
+  uploadedById String?
+  uploadedBy  User?    @relation("DocumentUploadedBy", fields: [uploadedById], references: [id], onDelete: SetNull)
+
+  createdAt DateTime @default(now())
+
+  @@map("document_records")
+}
+
+model IntegrationConnector {
+  id            String   @id @default(uuid())
+  systemName    String   @unique // SAP_S4HANA, ORACLE_ERP, MS_DYNAMICS, SALESFORCE, POWER_BI
+  category      String   // ERP, CRM, BI, MAPS, LOGISTICS
+  status        String   @default("CONNECTED") // CONNECTED, DISCONNECTED, SYNCING
+  apiEndpoint   String
+  syncFrequency String   @default("15 mins")
+  lastSyncAt    DateTime @default(now())
+
+  createdAt DateTime @default(now())
+
+  @@map("integration_connectors")
+}
+
+model IotDevice {
+  id            String    @id @default(uuid())
+  deviceCode    String    @unique
+  deviceType    String    // RFID, FORKLIFT_SENSOR, GPS, TEMP_HUMIDITY, BATTERY, DOCK_WEIGHT
+  warehouseId   String
+  warehouse     Warehouse @relation(fields: [warehouseId], references: [id], onDelete: Cascade)
+  batteryLevel  Int       @default(100)
+  status        String    @default("ONLINE") // ONLINE, OFFLINE, WARNING
+  lastPing      DateTime  @default(now())
+  telemetryData String?
+
+  createdAt DateTime @default(now())
+
+  @@map("iot_devices")
+}
+
+model SecurityPolicy {
+  id                   String   @id @default(uuid())
+  ruleName             String   @unique
+  rateLimitPerMin      Int      @default(120)
+  encryptedFields      String   @default("passwordHash, resetToken, creditCard")
+  failedLoginThreshold Int      @default(5)
+  sessionTimeoutMins   Int      @default(30)
+
+  createdAt DateTime @default(now())
+
+  @@map("security_policies")
+}

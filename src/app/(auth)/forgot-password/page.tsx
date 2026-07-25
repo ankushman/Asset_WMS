@@ -1,0 +1,87 @@
+'use client';
+
+import React, { useState } from 'react';
+import Link from 'next/link';
+import { Mail, CheckCircle2, ArrowRight } from 'lucide-react';
+
+export default function ForgotPasswordPage() {
+  const [email, setEmail] = useState('');
+  const [sent, setSent] = useState(false);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setSent(true);
+  };
+
+  return (
+    <div className="min-h-screen bg-navy-950 flex flex-col justify-center py-12 sm:px-6 lg:px-8 text-slate-100">
+      <div className="sm:mx-auto sm:w-full sm:max-w-md text-center">
+        <Link href="/" className="inline-flex items-center gap-3">
+          <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-royal-600 to-royal-400 flex items-center justify-center font-bold text-xl text-white shadow-xl shadow-royal-500/20">
+            E
+          </div>
+          <div className="text-left">
+            <span className="text-xl font-extrabold tracking-wider text-white">
+              ENNEA <span className="text-royal-400">SANGKAJ</span>
+            </span>
+            <span className="block text-xs text-slate-400">Security & Recovery</span>
+          </div>
+        </Link>
+        <h2 className="mt-6 text-2xl font-bold text-white tracking-tight">Reset Password</h2>
+      </div>
+
+      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
+        <div className="bg-navy-900 border border-slate-800 py-8 px-6 shadow-2xl rounded-3xl sm:px-10">
+          {sent ? (
+            <div className="text-center space-y-4">
+              <div className="w-12 h-12 rounded-full bg-emerald-950 text-emerald-400 flex items-center justify-center mx-auto border border-emerald-800">
+                <CheckCircle2 className="w-6 h-6" />
+              </div>
+              <h3 className="text-base font-bold text-white">Reset Link Dispatched</h3>
+              <p className="text-xs text-slate-400">
+                We sent a secure password reset link to <strong className="text-slate-200">{email}</strong>.
+              </p>
+              <Link
+                href="/login"
+                className="block py-2.5 px-4 text-xs font-bold text-white bg-royal-600 rounded-xl hover:bg-royal-500 mt-4"
+              >
+                Return to Sign In
+              </Link>
+            </div>
+          ) : (
+            <form onSubmit={handleSubmit} className="space-y-4 text-xs">
+              <div>
+                <label className="block text-slate-300 mb-1">Corporate Email Address</label>
+                <div className="relative">
+                  <Mail className="w-4 h-4 text-slate-500 absolute left-3.5 top-3" />
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="name@company.com"
+                    className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-navy-950 border border-slate-800 text-white placeholder-slate-500 focus:outline-none focus:border-royal-500 text-xs"
+                    required
+                  />
+                </div>
+              </div>
+
+              <button
+                type="submit"
+                className="w-full py-3 px-4 rounded-xl text-xs font-bold text-white bg-royal-600 hover:bg-royal-500 shadow-lg shadow-royal-900/50 flex items-center justify-center gap-2 transition-all"
+              >
+                Send Password Reset Email <ArrowRight className="w-4 h-4" />
+              </button>
+            </form>
+          )}
+
+          <div className="mt-6 text-center text-xs text-slate-400">
+            Remembered your password?{' '}
+            <Link href="/login" className="text-royal-400 font-bold hover:underline">
+              Sign In
+            </Link>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
