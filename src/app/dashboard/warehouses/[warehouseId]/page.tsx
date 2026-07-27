@@ -1201,7 +1201,7 @@ export default function WarehouseDetailPage({ params }: { params: Promise<{ ware
                       <tr key={ast.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors">
                         <td className="py-3 font-mono font-bold text-royal-600 dark:text-royal-400">{ast.assetCustomId}</td>
                         <td className="py-3 font-bold text-slate-900 dark:text-white">{ast.name}</td>
-                        <td className="py-3 text-slate-500">{ast.categoryName}</td>
+                        <td className="py-3 text-slate-500">{ast.category}</td>
                         <td className="py-3 text-slate-700 dark:text-slate-300">{ast.assignedEmployeeName || 'Unassigned'}</td>
                         <td className="py-3 text-slate-500">{ast.purchaseDate}</td>
                         <td className="py-3"><span className="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-100 dark:bg-slate-800">{ast.condition}</span></td>
