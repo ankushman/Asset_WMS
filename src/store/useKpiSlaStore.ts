@@ -71,6 +71,6 @@ export const useKpiSlaStore = create<KpiSlaState>()(
       addKpi: (kpi) => set((state) => ({ kpis: [{ ...kpi, id: `kpi-${Date.now()}` }, ...state.kpis] })),
       addSla: (sla) => set((state) => ({ slas: [{ ...sla, id: `sla-${Date.now()}` }, ...state.slas] })),
     }),
-    { name: 'ennea-kpi-sla-storage' }
+    { name: 'sankaj-kpi-sla-storage' }
   )
 );

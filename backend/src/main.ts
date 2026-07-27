@@ -10,9 +10,9 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
 
   const config = new DocumentBuilder()
-    .setTitle('Ennea – Sangkaj WMS & EAM API')
-    .setDescription('Production NestJS REST API documentation for Warehouse & Asset Management System')
-    .setVersion('1.0')
+    .setTitle('Sankaj Logistics Limited API')
+    .setDescription('Enterprise Asset Management Tracker & Warehouse Management System REST Microservice API')
+    .setVersion('1.0.0')
     .addBearerAuth()
     .build();
   const document = SwaggerModule.createDocument(app, config);
@@ -20,6 +20,6 @@ async function bootstrap() {
 
   const port = process.env.PORT || 4000;
   await app.listen(port);
-  console.log(`Ennea – Sangkaj NestJS Backend running on port ${port}`);
+  console.log(`Sankaj Logistics Limited NestJS Backend running on port ${port}`);
 }
 bootstrap();

@@ -60,7 +60,7 @@ export const useWarehouseStore = create<WarehouseState>()(
       setSelectedWarehouseId: (id) => set({ selectedWarehouseId: id }),
     }),
     {
-      name: 'ennea-warehouse-storage',
+      name: 'sankaj-warehouse-storage',
     }
   )
 );

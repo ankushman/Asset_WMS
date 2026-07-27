@@ -186,7 +186,7 @@ export default function CompaniesPage() {
                   type="text"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  placeholder="e.g. Sangkaj Logistics Ltd."
+                  placeholder="e.g. Sankaj Logistics Limited"
                   className="w-full p-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white"
                   required
                 />

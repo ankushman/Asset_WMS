@@ -272,7 +272,7 @@ export function GlobalCommandPalette({ isOpen, onClose }: GlobalCommandPalettePr
             </span>
           </div>
           <div className="flex items-center gap-1 text-orange-600 dark:text-orange-400 font-bold">
-            <Command className="w-3.5 h-3.5" /> Ennea Command Engine
+            <Command className="w-3.5 h-3.5" /> Sankaj Command Engine
           </div>
         </div>
       </div>

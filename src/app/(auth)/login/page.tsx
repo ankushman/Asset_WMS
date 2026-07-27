@@ -12,7 +12,7 @@ export default function LoginPage() {
   const router = useRouter();
   const { signInWithSupabase } = useAuthStore();
 
-  const [email, setEmail] = useState('admin@ennea.com');
+  const [email, setEmail] = useState('admin@sankajlogistics.com');
   const [password, setPassword] = useState('password123');
   const [selectedRole, setSelectedRole] = useState<UserRole>('SUPER_ADMIN');
   const [rememberMe, setRememberMe] = useState(true);
@@ -56,14 +56,14 @@ export default function LoginPage() {
     <div className="min-h-screen bg-navy-950 flex flex-col justify-center py-12 sm:px-6 lg:px-8 text-slate-100 selection:bg-royal-600 selection:text-white">
       <div className="sm:mx-auto sm:w-full sm:max-w-md text-center">
         <Link href="/" className="inline-flex items-center gap-3 group">
-          <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-royal-600 to-royal-400 flex items-center justify-center font-bold text-xl text-white shadow-xl shadow-royal-500/20 group-hover:scale-105 transition-transform">
-            E
+          <div className="w-12 h-12 rounded-2xl bg-orange-600 flex items-center justify-center font-extrabold text-xl text-white shadow-xl shadow-orange-600/20 group-hover:scale-105 transition-transform">
+            S
           </div>
-          <div className="text-left">
-            <span className="text-xl font-extrabold tracking-wider text-white">
-              ENNEA <span className="text-royal-400">SANGKAJ</span>
-            </span>
-            <span className="block text-xs text-slate-400">Enterprise Access Portal</span>
+          <div className="text-left leading-tight">
+            <div className="text-lg font-extrabold tracking-wider text-white">
+              SANKAJ <span className="text-orange-500 font-semibold">LOGISTICS LIMITED</span>
+            </div>
+            <span className="block text-xs text-slate-400 font-medium">Enterprise Warehouse Management System</span>
           </div>
         </Link>
         <h2 className="mt-6 text-2xl font-bold text-white tracking-tight">

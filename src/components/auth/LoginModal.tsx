@@ -13,21 +13,21 @@ interface LoginModalProps {
 }
 
 const PRESET_CREDENTIALS: Record<UserRole, { email: string; pass: string }> = {
-  SUPER_ADMIN: { email: 'admin@ennea.com', pass: 'password123' },
-  COMPANY_ADMIN: { email: 'company.admin@sangkaj.com', pass: 'password123' },
-  WAREHOUSE_MANAGER: { email: 'wh.manager@sangkaj.com', pass: 'password123' },
-  SUPERVISOR: { email: 'supervisor@sangkaj.com', pass: 'password123' },
-  INVENTORY_EXECUTIVE: { email: 'inventory@sangkaj.com', pass: 'password123' },
-  PICKER: { email: 'picker@sangkaj.com', pass: 'password123' },
-  PACKER: { email: 'packer@sangkaj.com', pass: 'password123' },
-  VIEWER: { email: 'viewer@sangkaj.com', pass: 'password123' },
+  SUPER_ADMIN: { email: 'admin@sankajlogistics.com', pass: 'password123' },
+  COMPANY_ADMIN: { email: 'deepak@sankajlogistics.com', pass: 'password123' },
+  WAREHOUSE_MANAGER: { email: 'rajesh.sharma@sankajlogistics.com', pass: 'password123' },
+  SUPERVISOR: { email: 'priya.s@sankajlogistics.com', pass: 'password123' },
+  INVENTORY_EXECUTIVE: { email: 'amit.verma@sankajlogistics.com', pass: 'password123' },
+  PICKER: { email: 'rohan.d@sankajlogistics.com', pass: 'password123' },
+  PACKER: { email: 'suresh.p@sankajlogistics.com', pass: 'password123' },
+  VIEWER: { email: 'viewer@sankajlogistics.com', pass: 'password123' },
 };
 
 export function LoginModal({ isOpen, onClose }: LoginModalProps) {
   const router = useRouter();
   const { signInWithSupabase, isAuthenticated } = useAuthStore();
 
-  const [email, setEmail] = useState('admin@ennea.com');
+  const [email, setEmail] = useState('admin@sankajlogistics.com');
   const [password, setPassword] = useState('password123');
   const [selectedRole, setSelectedRole] = useState<UserRole>('SUPER_ADMIN');
   const [rememberMe, setRememberMe] = useState(true);
@@ -133,14 +133,14 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
         {/* Modal Brand & Header */}
         <div className="text-center mb-6">
           <div className="inline-flex items-center gap-3 mb-2">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-royal-600 to-royal-400 flex items-center justify-center font-bold text-lg text-white shadow-lg shadow-royal-500/20">
-              E
+            <div className="w-10 h-10 rounded-xl bg-orange-600 flex items-center justify-center font-extrabold text-lg text-white shadow-lg shadow-orange-600/20 flex-shrink-0">
+              S
             </div>
-            <div className="text-left">
-              <span className="text-lg font-extrabold tracking-wider text-white">
-                ENNEA <span className="text-royal-400">SANGKAJ</span>
-              </span>
-              <span className="block text-[10px] text-slate-400">Enterprise Access Portal</span>
+            <div className="text-left leading-tight">
+              <div className="text-base font-extrabold tracking-wider text-white">
+                SANKAJ <span className="text-orange-500 font-semibold">LOGISTICS LIMITED</span>
+              </div>
+              <span className="block text-[10px] text-slate-400 font-medium">Enterprise Warehouse Management System</span>
             </div>
           </div>
           <h2 className="text-xl font-bold text-white tracking-tight mt-2">

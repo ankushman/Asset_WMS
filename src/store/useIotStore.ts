@@ -30,6 +30,6 @@ export const useIotStore = create<IotState>()(
       devices: INITIAL_DEVICES,
       addDevice: (device) => set((state) => ({ devices: [{ ...device, id: `iot-${Date.now()}`, lastPing: 'Just now' }, ...state.devices] })),
     }),
-    { name: 'ennea-iot-storage' }
+    { name: 'sankaj-iot-storage' }
   )
 );

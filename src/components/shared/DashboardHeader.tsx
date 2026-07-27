@@ -44,6 +44,10 @@ export function DashboardHeader() {
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const isSuperAdmin = originalRole === 'SUPER_ADMIN';
 
@@ -154,7 +158,15 @@ export function DashboardHeader() {
             className="p-2 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
             title="Toggle Light / Dark Mode"
           >
-            {theme === 'dark' ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-slate-600" />}
+            {mounted ? (
+              theme === 'dark' ? (
+                <Sun className="w-4 h-4 text-amber-400" />
+              ) : (
+                <Moon className="w-4 h-4 text-slate-600" />
+              )
+            ) : (
+              <Moon className="w-4 h-4 text-slate-600 opacity-0" />
+            )}
           </button>
 
           {/* Notification Drawer Trigger */}

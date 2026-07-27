@@ -29,6 +29,6 @@ export const useCalendarStore = create<CalendarState>()(
       events: INITIAL_EVENTS,
       addEvent: (evt) => set((state) => ({ events: [{ ...evt, id: `evt-${Date.now()}` }, ...state.events] })),
     }),
-    { name: 'ennea-calendar-storage' }
+    { name: 'sankaj-calendar-storage' }
   )
 );

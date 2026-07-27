@@ -30,6 +30,6 @@ export const useDocumentStore = create<DocumentState>()(
       documents: INITIAL_DOCS,
       addDocument: (doc) => set((state) => ({ documents: [{ ...doc, id: `doc-${Date.now()}`, uploadedAt: new Date().toISOString().split('T')[0] }, ...state.documents] })),
     }),
-    { name: 'ennea-doc-storage' }
+    { name: 'sankaj-doc-storage' }
   )
 );

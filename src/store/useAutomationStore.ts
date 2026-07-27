@@ -30,6 +30,6 @@ export const useAutomationStore = create<AutomationState>()(
       toggleRule: (id) => set((state) => ({ rules: state.rules.map((r) => (r.id === id ? { ...r, isActive: !r.isActive } : r)) })),
       addRule: (rule) => set((state) => ({ rules: [{ ...rule, id: `rule-${Date.now()}` }, ...state.rules] })),
     }),
-    { name: 'ennea-automation-storage' }
+    { name: 'sankaj-automation-storage' }
   )
 );

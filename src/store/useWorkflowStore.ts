@@ -35,10 +35,10 @@ const DEFAULT_INBOUND_STEPS = [
   'Vehicle Reporting',
   'Dock Allocation',
   'Unload',
+  'Staging',
   'Inspection',
   'Counting',
   'GRN Generation',
-  'Staging',
   'Put Away',
   'Completed',
 ];
@@ -49,7 +49,7 @@ const DEFAULT_OUTBOUND_STEPS = [
   'Packing',
   'Staging',
   'Gate Pass',
-  'Dispatch',
+  'Handover to Transporter',
   'Completed',
 ];
 
@@ -136,7 +136,7 @@ export const useWorkflowStore = create<WorkflowState>()(
         set((state) => ({
           outboundOrders: state.outboundOrders.map((o) => {
             if (o.id !== orderId) return o;
-            const updatedSteps = o.steps.map((st) => {
+            let updatedSteps = o.steps.map((st) => {
               if (st.id !== stepId) return st;
               return {
                 ...st,
@@ -147,6 +147,23 @@ export const useWorkflowStore = create<WorkflowState>()(
                 timestamp: new Date().toLocaleString(),
               };
             });
+
+            // If "Handover to Transporter" was completed, automatically mark "Completed" step completed too!
+            const handoverStep = updatedSteps.find((st) => st.stepName === 'Handover to Transporter');
+            if (handoverStep && handoverStep.status === 'COMPLETED') {
+              updatedSteps = updatedSteps.map((st) => {
+                if (st.stepName === 'Completed') {
+                  return {
+                    ...st,
+                    status: 'COMPLETED',
+                    progress: 100,
+                    timestamp: new Date().toLocaleString(),
+                    remarks: 'Outbound order completed & handed over to transporter.',
+                  };
+                }
+                return st;
+              });
+            }
 
             const allDone = updatedSteps.every((st) => st.status === 'COMPLETED');
             const overallStatus = allDone ? 'COMPLETED' : 'IN_PROGRESS';
@@ -161,7 +178,7 @@ export const useWorkflowStore = create<WorkflowState>()(
       },
     }),
     {
-      name: 'ennea-workflow-storage',
+      name: 'sankaj-workflow-storage',
     }
   )
 );

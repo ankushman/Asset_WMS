@@ -16,22 +16,19 @@ export default function InboundPage() {
   const [shipmentCode, setShipmentCode] = useState(`INB-2026-00${inboundShipments.length + 1}`);
   const [supplierName, setSupplierName] = useState('');
   const [vehicleNumber, setVehicleNumber] = useState('');
-  const [dockNumber, setDockNumber] = useState('Dock 01');
-  const [totalItems, setTotalItems] = useState(500);
-  const [warehouseId, setWarehouseId] = useState(warehouses[0]?.id || 'wh-001');
 
   const selectedShipment = inboundShipments.find((s) => s.id === selectedShipmentId) || inboundShipments[0];
 
   const handleCreate = (e: React.FormEvent) => {
     e.preventDefault();
-    const wh = warehouses.find((w) => w.id === warehouseId);
+    const wh = warehouses[0];
     addInboundShipment({
       shipmentCode,
       supplierName,
       vehicleNumber,
-      dockNumber,
-      totalItems: Number(totalItems),
-      warehouseId,
+      dockNumber: 'Dock 01',
+      totalItems: 500,
+      warehouseId: wh?.id || 'wh-001',
       warehouseName: wh?.name || 'Mumbai Central Mega Hub',
       status: 'IN_PROGRESS',
     });
@@ -48,7 +45,7 @@ export default function InboundPage() {
             Inbound Logistics & 9-Step Receiving Engine
           </h1>
           <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-            Vehicle Reporting -&gt; Dock Allocation -&gt; Unload -&gt; Inspection -&gt; Counting -&gt; GRN -&gt; Staging -&gt; Put Away -&gt; Completed.
+            Vehicle Reporting -&gt; Dock Allocation -&gt; Unload -&gt; Staging -&gt; Inspection -&gt; Counting -&gt; GRN Generation -&gt; Put Away -&gt; Completed.
           </p>
         </div>
 
@@ -136,10 +133,7 @@ export default function InboundPage() {
                     required
                   />
                 </div>
-              </div>
-
-              <div className="grid grid-cols-3 gap-3">
-                <div>
+                <div className="col-span-2">
                   <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Vehicle Number</label>
                   <input
                     type="text"
@@ -150,40 +144,6 @@ export default function InboundPage() {
                     required
                   />
                 </div>
-                <div>
-                  <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Allocated Dock</label>
-                  <input
-                    type="text"
-                    value={dockNumber}
-                    onChange={(e) => setDockNumber(e.target.value)}
-                    placeholder="Dock 04"
-                    className="w-full p-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white"
-                  />
-                </div>
-                <div>
-                  <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Total Unit Volume</label>
-                  <input
-                    type="number"
-                    value={totalItems}
-                    onChange={(e) => setTotalItems(Number(e.target.value))}
-                    className="w-full p-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Destination Warehouse</label>
-                <select
-                  value={warehouseId}
-                  onChange={(e) => setWarehouseId(e.target.value)}
-                  className="w-full p-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white font-medium"
-                >
-                  {warehouses.map((w) => (
-                    <option key={w.id} value={w.id}>
-                      {w.name} ({w.code})
-                    </option>
-                  ))}
-                </select>
               </div>
 
               <div className="flex justify-end gap-2 pt-2">

@@ -65,7 +65,7 @@ const INITIAL_CHAT: ChatMessage[] = [
   {
     id: 'msg-1',
     sender: 'AI',
-    text: 'Hello! I am Ennea AI Command Assistant. Ask me anything about warehouse occupancy, delayed shipments, equipment maintenance, low stock, or executive reports.',
+    text: 'Hello! I am Sankaj AI Command Assistant. Ask me anything about warehouse occupancy, delayed shipments, equipment maintenance, low stock, or executive reports.',
     timestamp: 'Just now',
   },
 ];
@@ -91,6 +91,6 @@ export const useAiStore = create<AiState>()(
         })),
       clearChat: () => set({ chatHistory: INITIAL_CHAT }),
     }),
-    { name: 'ennea-ai-storage' }
+    { name: 'sankaj-ai-storage' }
   )
 );

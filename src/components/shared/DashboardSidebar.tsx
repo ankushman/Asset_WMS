@@ -84,17 +84,20 @@ export function DashboardSidebar() {
   return (
     <aside className="w-64 bg-[#111827] text-slate-300 flex flex-col border-r border-slate-800 select-none flex-shrink-0 min-h-screen">
       {/* Brand Header */}
-      <div className="h-16 px-6 flex items-center justify-between border-b border-slate-800 bg-[#111827]">
-        <Link href="/dashboard" className="flex items-center gap-3 group">
-          <div className="w-8 h-8 rounded-lg bg-orange-600 flex items-center justify-center font-extrabold text-white text-sm tracking-wider">
-            E
+      <div className="h-16 px-4 flex items-center justify-between border-b border-slate-800 bg-[#111827]">
+        <Link href="/dashboard" className="flex items-center gap-2.5 group">
+          <div className="w-8 h-8 rounded-lg bg-orange-600 flex items-center justify-center font-extrabold text-white text-sm tracking-wider flex-shrink-0">
+            S
           </div>
-          <div>
-            <div className="font-bold text-sm tracking-wide text-white flex items-center gap-1">
-              ENNEA <span className="text-orange-500 font-normal">SANGKAJ</span>
+          <div className="leading-tight">
+            <div className="font-bold text-xs tracking-wider text-white">
+              SANKAJ
             </div>
-            <div className="text-[10px] text-slate-400 font-medium tracking-tight">
-              Enterprise WMS & Asset Platform
+            <div className="font-semibold text-[10px] text-orange-500 tracking-wider">
+              LOGISTICS LIMITED
+            </div>
+            <div className="text-[9px] text-slate-400 font-medium tracking-tight">
+              Enterprise Warehouse Management System
             </div>
           </div>
         </Link>

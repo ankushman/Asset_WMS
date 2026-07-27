@@ -40,7 +40,7 @@ export const useAuthStore = create<AuthState>()(
       originalRole: 'SUPER_ADMIN',
       impersonatedRole: null,
       isAuthenticated: true,
-      token: 'mock-jwt-token-ennea-sangkaj-2026',
+      token: 'mock-jwt-token-sankaj-logistics-2026',
 
       login: (email: string, role?: UserRole) => {
         const { registeredUsers } = get();
@@ -52,13 +52,13 @@ export const useAuthStore = create<AuthState>()(
 
         if (foundUser) {
           const userWithRole = { ...foundUser, role: assignedRole };
-          Cookies.set('token', 'mock-jwt-token-ennea-sangkaj-2026', { expires: 7 });
+          Cookies.set('token', 'mock-jwt-token-sankaj-logistics-2026', { expires: 7 });
           set({
             user: userWithRole,
             originalRole: assignedRole,
             impersonatedRole: null,
             isAuthenticated: true,
-            token: 'mock-jwt-token-ennea-sangkaj-2026',
+            token: 'mock-jwt-token-sankaj-logistics-2026',
           });
           return true;
         }
@@ -75,14 +75,14 @@ export const useAuthStore = create<AuthState>()(
           createdAt: new Date().toISOString(),
         };
 
-        Cookies.set('token', 'mock-jwt-token-ennea-sangkaj-2026', { expires: 7 });
+        Cookies.set('token', 'mock-jwt-token-sankaj-logistics-2026', { expires: 7 });
         set((state) => ({
           user: demoUser,
           registeredUsers: [demoUser, ...state.registeredUsers],
           originalRole: assignedRole,
           impersonatedRole: null,
           isAuthenticated: true,
-          token: 'mock-jwt-token-ennea-sangkaj-2026',
+          token: 'mock-jwt-token-sankaj-logistics-2026',
         }));
         return true;
       },
@@ -249,13 +249,13 @@ export const useAuthStore = create<AuthState>()(
         // Seamless fall-through: If user registered in this session or initial user list, authenticate!
         if (existingRegisteredUser) {
           const assignedRole = role || existingRegisteredUser.role;
-          Cookies.set('token', 'mock-jwt-token-ennea-sangkaj-2026', { expires: 7 });
+          Cookies.set('token', 'mock-jwt-token-sankaj-logistics-2026', { expires: 7 });
           set({
             user: { ...existingRegisteredUser, role: assignedRole },
             originalRole: assignedRole,
             impersonatedRole: null,
             isAuthenticated: true,
-            token: 'mock-jwt-token-ennea-sangkaj-2026',
+            token: 'mock-jwt-token-sankaj-logistics-2026',
           });
           return { success: true };
         }
@@ -266,7 +266,7 @@ export const useAuthStore = create<AuthState>()(
       },
     }),
     {
-      name: 'ennea-auth-storage',
+      name: 'sankaj-auth-storage',
     }
   )
 );

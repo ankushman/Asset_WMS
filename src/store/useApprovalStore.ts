@@ -58,6 +58,6 @@ export const useApprovalStore = create<ApprovalState>()(
           ),
         })),
     }),
-    { name: 'ennea-approval-storage' }
+    { name: 'sankaj-approval-storage' }
   )
 );

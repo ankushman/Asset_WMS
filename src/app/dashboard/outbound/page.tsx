@@ -48,7 +48,7 @@ export default function OutboundPage() {
             Outbound Dispatch & 7-Step Picking Engine
           </h1>
           <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-            Invoice -&gt; Picking -&gt; Packing -&gt; Staging -&gt; Gate Pass -&gt; Dispatch -&gt; Completed.
+            Invoice -&gt; Picking -&gt; Packing -&gt; Staging -&gt; Gate Pass -&gt; Handover to Transporter -&gt; Completed.
           </p>
         </div>
 

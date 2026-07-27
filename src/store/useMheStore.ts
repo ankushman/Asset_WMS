@@ -57,6 +57,6 @@ export const useMheStore = create<MheState>()(
       updateEquipment: (id, data) => set((state) => ({ equipments: state.equipments.map((e) => (e.id === id ? { ...e, ...data } : e)) })),
       addMaintenanceRecord: (m) => set((state) => ({ maintenances: [{ ...m, id: `maint-${Date.now()}` }, ...state.maintenances] })),
     }),
-    { name: 'ennea-mhe-storage' }
+    { name: 'sankaj-mhe-storage' }
   )
 );

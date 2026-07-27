@@ -82,7 +82,7 @@ export const useAssetStore = create<AssetState>()(
       },
     }),
     {
-      name: 'ennea-asset-storage',
+      name: 'sankaj-asset-storage',
     }
   )
 );

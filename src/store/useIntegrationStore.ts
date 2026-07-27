@@ -17,10 +17,10 @@ interface IntegrationState {
 }
 
 const INITIAL_CONNECTORS: IntegrationConnector[] = [
-  { id: 'conn-1', systemName: 'SAP S/4HANA Enterprise ERP', category: 'ERP', status: 'CONNECTED', apiEndpoint: 'https://sap-api.ennea-sangkaj.com/v1/so-grn', syncFrequency: 'Real-Time Webhook', lastSyncAt: '2 mins ago' },
-  { id: 'conn-2', systemName: 'Oracle ERP Cloud Financials', category: 'ERP', status: 'CONNECTED', apiEndpoint: 'https://oracle-cloud.ennea-sangkaj.com/api/ledger', syncFrequency: '15 mins', lastSyncAt: '8 mins ago' },
-  { id: 'conn-3', systemName: 'Microsoft Dynamics 365 Supply Chain', category: 'ERP', status: 'CONNECTED', apiEndpoint: 'https://dynamics365.ennea-sangkaj.com/api/wms', syncFrequency: 'Hourly Batch', lastSyncAt: '22 mins ago' },
-  { id: 'conn-4', systemName: 'Salesforce Enterprise CRM', category: 'CRM', status: 'CONNECTED', apiEndpoint: 'https://salesforce.ennea-sangkaj.com/services/data/v58.0', syncFrequency: 'Real-Time', lastSyncAt: 'Just now' },
+  { id: 'conn-1', systemName: 'SAP S/4HANA Enterprise ERP', category: 'ERP', status: 'CONNECTED', apiEndpoint: 'https://sap-api.sankajlogistics.com/v1/so-grn', syncFrequency: 'Real-Time Webhook', lastSyncAt: '2 mins ago' },
+  { id: 'conn-2', systemName: 'Oracle ERP Cloud Financials', category: 'ERP', status: 'CONNECTED', apiEndpoint: 'https://oracle-cloud.sankajlogistics.com/api/ledger', syncFrequency: '15 mins', lastSyncAt: '8 mins ago' },
+  { id: 'conn-3', systemName: 'Microsoft Dynamics 365 Supply Chain', category: 'ERP', status: 'CONNECTED', apiEndpoint: 'https://dynamics365.sankajlogistics.com/api/wms', syncFrequency: 'Hourly Batch', lastSyncAt: '22 mins ago' },
+  { id: 'conn-4', systemName: 'Salesforce Enterprise CRM', category: 'CRM', status: 'CONNECTED', apiEndpoint: 'https://salesforce.sankajlogistics.com/services/data/v58.0', syncFrequency: 'Real-Time', lastSyncAt: 'Just now' },
   { id: 'conn-5', systemName: 'Microsoft Power BI Embedded', category: 'BI', status: 'CONNECTED', apiEndpoint: 'https://api.powerbi.com/v1.0/myorg/reports', syncFrequency: 'Live Dataset', lastSyncAt: 'Just now' },
 ];
 
@@ -35,6 +35,6 @@ export const useIntegrationStore = create<IntegrationState>()(
           ),
         })),
     }),
-    { name: 'ennea-integration-storage' }
+    { name: 'sankaj-integration-storage' }
   )
 );

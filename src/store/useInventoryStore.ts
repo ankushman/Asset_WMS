@@ -69,7 +69,7 @@ export const useInventoryStore = create<InventoryState>()(
       },
     }),
     {
-      name: 'ennea-inventory-storage',
+      name: 'sankaj-inventory-storage',
     }
   )
 );

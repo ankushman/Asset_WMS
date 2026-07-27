@@ -4,7 +4,7 @@ import bcrypt from 'bcryptjs';
 const prisma = new PrismaClient();
 
 async function main() {
-  console.log('Seeding Ennea – Sangkaj Enterprise Phase 3 Database...');
+  console.log('Seeding Sankaj Logistics Limited Database...');
 
   const passwordHash = bcrypt.hashSync('Password@123', 10);
 
@@ -13,11 +13,11 @@ async function main() {
     where: { gstNumber: '27AAACS1234F1Z5' },
     update: {},
     create: {
-      name: 'Sangkaj Enterprises Ltd.',
+      name: 'Sankaj Logistics Limited',
       gstNumber: '27AAACS1234F1Z5',
       address: 'Suite 401, Apex Financial Tower, BKC',
       phone: '+91 22 4918 2000',
-      email: 'corp@sangkaj.com',
+      email: 'corp@sankajlogistics.com',
       logo: 'https://images.unsplash.com/photo-1560179707-f14e90ef3623?auto=format&fit=crop&w=120&q=80',
       status: CompanyStatus.ACTIVE,
     },
@@ -46,11 +46,11 @@ async function main() {
 
   // 3. User
   const superAdmin = await prisma.user.upsert({
-    where: { email: 'admin@ennea.com' },
+    where: { email: 'admin@sankajlogistics.com' },
     update: {},
     create: {
       name: 'Super Admin User',
-      email: 'admin@ennea.com',
+      email: 'admin@sankajlogistics.com',
       passwordHash,
       phone: '+91 98765 43210',
       role: Role.SUPER_ADMIN,
@@ -61,7 +61,7 @@ async function main() {
     },
   });
 
-  // 4. Phase 3 Extensions
+  // 4. Extensions
   await prisma.aiRecommendation.create({
     data: {
       category: 'INVENTORY',
@@ -91,7 +91,7 @@ async function main() {
       systemName: 'SAP_S4HANA',
       category: 'ERP',
       status: 'CONNECTED',
-      apiEndpoint: 'https://sap-api.ennea-sangkaj.com/v1/so-grn',
+      apiEndpoint: 'https://sap-api.sankajlogistics.com/v1/so-grn',
       syncFrequency: 'Real-Time Webhook',
     },
   });

@@ -3,7 +3,7 @@ import './globals.css';
 import { ThemeProvider } from '@/components/shared/ThemeProvider';
 
 export const metadata: Metadata = {
-  title: 'Ennea – Sangkaj | Enterprise Asset & Warehouse Management System',
+  title: 'SANKAJ LOGISTICS LIMITED | Enterprise Warehouse Management System',
   description:
     'Production-ready Enterprise Asset Management Tracker & Warehouse Management System (WMS) built for multi-tenant industrial organizations.',
 };

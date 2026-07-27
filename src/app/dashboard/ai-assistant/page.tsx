@@ -116,7 +116,7 @@ export default function AiAssistantPage() {
                 }`}
               >
                 <div className="flex justify-between items-center mb-1 text-[10px] opacity-70">
-                  <span className="font-bold">{isAi ? 'Ennea AI Engine' : 'You'}</span>
+                  <span className="font-bold">{isAi ? 'Sankaj AI Engine' : 'You'}</span>
                   <span>{msg.timestamp}</span>
                 </div>
                 <div className="whitespace-pre-line">{msg.text}</div>

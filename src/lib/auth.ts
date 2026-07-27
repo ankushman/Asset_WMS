@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'ennea_sangkaj_enterprise_secret_key_2026_super_secure';
+const JWT_SECRET = process.env.JWT_SECRET || 'sankaj_logistics_enterprise_secret_key_2026_super_secure';
 const JWT_EXPIRES_IN = '7d';
 
 export interface TokenPayload {

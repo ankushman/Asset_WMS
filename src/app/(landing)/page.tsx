@@ -75,8 +75,8 @@ export default function LandingPage() {
     {
       name: 'Rajesh Sharma',
       role: 'VP of Supply Chain Operations',
-      company: 'Sangkaj Enterprises Ltd.',
-      quote: 'Ennea – Sangkaj transformed our 4 mega hubs. We reduced dock turnaround time by 38% within the first month of deployment.',
+      company: 'Sankaj Logistics Limited',
+      quote: 'Sankaj Logistics Limited transformed our 4 mega hubs. We reduced dock turnaround time by 38% within the first month of deployment.',
       avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=120&q=80',
     },
     {
@@ -90,8 +90,8 @@ export default function LandingPage() {
 
   const faqs = [
     {
-      q: 'How does Ennea – Sangkaj handle multi-warehouse organizations?',
-      a: 'Ennea provides clean multi-tenancy. Super Admins and Company Admins can add unlimited warehouses, assign dedicated managers, and filter inventory or assets globally or per facility.',
+      q: 'How does Sankaj Logistics Limited handle multi-warehouse organizations?',
+      a: 'Sankaj Logistics provides clean multi-tenancy. Super Admins and Company Admins can add unlimited warehouses, assign dedicated managers, and filter inventory or assets globally or per facility.',
     },
     {
       q: 'What roles are supported out of the box?',
@@ -102,7 +102,7 @@ export default function LandingPage() {
       a: 'Yes, all modules support 1-click export to PDF, Microsoft Excel (.xlsx), and CSV formats with official timestamp headers.',
     },
     {
-      q: 'Is Ennea ready for integration with SAP or Oracle ERPs?',
+      q: 'Is Sankaj Logistics ready for integration with SAP or Oracle ERPs?',
       a: 'Absolutely. The architecture is modular and exposes clean REST API endpoints for Goods Receipt Notes (GRN), PO matching, and stock sync.',
     },
   ];
@@ -113,14 +113,14 @@ export default function LandingPage() {
       <header className="sticky top-0 z-40 bg-navy-950/80 backdrop-blur-xl border-b border-slate-800/80">
         <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-3 group">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-royal-600 to-royal-400 flex items-center justify-center font-bold text-white shadow-lg shadow-royal-500/20 group-hover:scale-105 transition-transform">
-              E
+            <div className="w-10 h-10 rounded-xl bg-orange-600 flex items-center justify-center font-extrabold text-white text-lg shadow-lg shadow-orange-600/20 group-hover:scale-105 transition-transform flex-shrink-0">
+              S
             </div>
-            <div>
-              <span className="text-lg font-extrabold tracking-wider text-white">
-                ENNEA <span className="text-royal-400 font-semibold">SANGKAJ</span>
-              </span>
-              <span className="block text-[10px] text-slate-400 tracking-tight">Enterprise WMS & EAM</span>
+            <div className="leading-tight">
+              <div className="text-base font-extrabold tracking-wider text-white">
+                SANKAJ <span className="text-orange-500 font-semibold">LOGISTICS LIMITED</span>
+              </div>
+              <span className="block text-[10px] text-slate-400 font-medium">Enterprise Warehouse Management System</span>
             </div>
           </Link>
 
@@ -229,7 +229,7 @@ export default function LandingPage() {
                   <div className="w-3 h-3 rounded-full bg-rose-500" />
                   <div className="w-3 h-3 rounded-full bg-amber-500" />
                   <div className="w-3 h-3 rounded-full bg-emerald-500" />
-                  <span className="ml-3 text-xs font-mono text-slate-400">ennea-sangkaj.enterprise/dashboard</span>
+                  <span className="ml-3 text-xs font-mono text-slate-400">sankaj-logistics.enterprise/dashboard</span>
                 </div>
                 <div className="flex items-center gap-2 text-xs font-mono text-emerald-400 bg-emerald-950/80 px-2.5 py-1 rounded border border-emerald-800">
                   <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
@@ -405,12 +405,14 @@ export default function LandingPage() {
       <footer className="bg-navy-950 border-t border-slate-800/80 pt-16 pb-12 px-6 text-slate-400 text-xs">
         <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-10 pb-12 border-b border-slate-800/80">
           <div className="space-y-3">
-            <div className="flex items-center gap-2">
-              <div className="w-7 h-7 rounded-lg bg-royal-600 flex items-center justify-center font-bold text-white">E</div>
-              <span className="text-base font-extrabold text-white">ENNEA <span className="text-royal-400">SANGKAJ</span></span>
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-lg bg-orange-600 flex items-center justify-center font-extrabold text-white text-sm flex-shrink-0">S</div>
+              <div className="leading-tight">
+                <span className="text-base font-extrabold text-white">SANKAJ <span className="text-orange-500 font-semibold">LOGISTICS LIMITED</span></span>
+              </div>
             </div>
             <p className="text-slate-400 leading-relaxed">
-              Enterprise Asset & Warehouse Management System Phase 1 MVP. Built for precision logistics.
+              Enterprise Warehouse Management System & Asset Control Platform. Built for precision logistics.
             </p>
           </div>
 
@@ -440,13 +442,13 @@ export default function LandingPage() {
             <ul className="space-y-2">
               <li className="flex items-center gap-2"><MapPin className="w-3.5 h-3.5 text-royal-400" /> BKC Financial Tower, Mumbai</li>
               <li className="flex items-center gap-2"><Phone className="w-3.5 h-3.5 text-royal-400" /> +91 22 4918 2000</li>
-              <li className="flex items-center gap-2"><Mail className="w-3.5 h-3.5 text-royal-400" /> support@sangkaj.com</li>
+              <li className="flex items-center gap-2"><Mail className="w-3.5 h-3.5 text-royal-400" /> support@sankajlogistics.com</li>
             </ul>
           </div>
         </div>
 
         <div className="max-w-7xl mx-auto pt-8 flex flex-col sm:flex-row justify-between items-center gap-4">
-          <p>© 2026 Ennea – Sangkaj Ltd. All rights reserved.</p>
+          <p>© 2026 Sankaj Logistics Limited. All rights reserved.</p>
           <div className="flex items-center gap-4 text-slate-500">
             <span className="hover:text-slate-300">Twitter</span>
             <span className="hover:text-slate-300">LinkedIn</span>

@@ -7,10 +7,10 @@ export default function AuditLogsPage() {
   const [searchTerm, setSearchTerm] = useState('');
 
   const auditLogs = [
-    { id: 'log-1', user: 'Super Admin User', email: 'admin@ennea.com', ip: '192.168.1.102', timestamp: '2026-07-24 10:45:12 AM', module: 'TMS', action: 'DISPATCH_TRIP', details: 'Dispatched Delivery Trip TRP-2026-8801 to Mahindra Auto Parts', oldValue: 'SCHEDULED', newValue: 'GATE_OUT' },
-    { id: 'log-2', user: 'Rajesh Sharma', email: 'rajesh.sharma@sangkaj.com', ip: '192.168.1.140', timestamp: '2026-07-24 09:40:05 AM', module: 'INBOUND', action: 'GRN_GENERATED', details: 'Issued GRN #9941 for 850 units from Tata International', oldValue: 'COUNTING', newValue: 'GRN' },
-    { id: 'log-3', user: 'Deepak Sangkaj', email: 'deepak@sangkaj.com', ip: '192.168.1.88', timestamp: '2026-07-24 07:20:00 AM', module: 'OUTBOUND', action: 'INVOICE_AUTHORIZED', details: 'Authorized Sales Invoice INV-SNK-9901 for 450 units', oldValue: 'PENDING', newValue: 'COMPLETED' },
-    { id: 'log-4', user: 'System Admin', email: 'admin@ennea.com', ip: '127.0.0.1', timestamp: '2026-07-24 06:00:00 AM', module: 'ASSETS', action: 'ASSIGN_ASSET', details: 'Assigned Toyota Forklift AST-FORK-001 to Priya Sundaram', oldValue: 'Unassigned', newValue: 'Priya Sundaram' },
+    { id: 'log-1', user: 'Super Admin User', email: 'admin@sankajlogistics.com', ip: '192.168.1.102', timestamp: '2026-07-24 10:45:12 AM', module: 'TMS', action: 'DISPATCH_TRIP', details: 'Dispatched Delivery Trip TRP-2026-8801 to Mahindra Auto Parts', oldValue: 'SCHEDULED', newValue: 'GATE_OUT' },
+    { id: 'log-2', user: 'Rajesh Sharma', email: 'rajesh.sharma@sankajlogistics.com', ip: '192.168.1.140', timestamp: '2026-07-24 09:40:05 AM', module: 'INBOUND', action: 'GRN_GENERATED', details: 'Issued GRN #9941 for 850 units from Tata International', oldValue: 'COUNTING', newValue: 'GRN' },
+    { id: 'log-3', user: 'Deepak Sankaj', email: 'deepak@sankajlogistics.com', ip: '192.168.1.88', timestamp: '2026-07-24 07:20:00 AM', module: 'OUTBOUND', action: 'INVOICE_AUTHORIZED', details: 'Authorized Sales Invoice INV-SNK-9901 for 450 units', oldValue: 'PENDING', newValue: 'COMPLETED' },
+    { id: 'log-4', user: 'System Admin', email: 'admin@sankajlogistics.com', ip: '127.0.0.1', timestamp: '2026-07-24 06:00:00 AM', module: 'ASSETS', action: 'ASSIGN_ASSET', details: 'Assigned Toyota Forklift AST-FORK-001 to Priya Sundaram', oldValue: 'Unassigned', newValue: 'Priya Sundaram' },
   ];
 
   const filteredLogs = auditLogs.filter(

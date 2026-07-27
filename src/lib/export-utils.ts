@@ -50,12 +50,12 @@ export function exportToPDF(title: string, headers: string[], rows: (string | nu
     <!DOCTYPE html>
     <html>
       <head>
-        <title>${title} - Ennea Sangkaj Report</title>
+        <title>${title} - Sankaj Logistics Report</title>
         <style>
           body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 30px; color: #1e293b; }
-          .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #2563eb; padding-bottom: 15px; margin-bottom: 20px; }
+          .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #ea580c; padding-bottom: 15px; margin-bottom: 20px; }
           .logo { font-size: 24px; font-weight: bold; color: #0b192c; }
-          .logo span { color: #2563eb; }
+          .logo span { color: #ea580c; }
           .title { font-size: 18px; font-weight: 600; color: #334e68; }
           table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px; }
           th, td { border: 1px solid #cbd5e1; padding: 8px 12px; text-align: left; }
@@ -66,7 +66,7 @@ export function exportToPDF(title: string, headers: string[], rows: (string | nu
       </head>
       <body>
         <div class="header">
-          <div class="logo">ENNEA <span>SANGKAJ</span></div>
+          <div class="logo">SANKAJ <span>LOGISTICS LIMITED</span></div>
           <div class="title">${title}</div>
         </div>
         <p style="font-size: 12px; color: #64748b;">Generated on: ${new Date().toLocaleString()} | Confidential Enterprise Document</p>
@@ -81,7 +81,7 @@ export function exportToPDF(title: string, headers: string[], rows: (string | nu
           </tbody>
         </table>
         <div class="footer">
-          Ennea – Sangkaj WMS & EAM Platform | Phase 1 Production System
+          Sankaj Logistics Limited | Enterprise Warehouse Management System
         </div>
         <script>
           window.onload = function() { window.print(); };

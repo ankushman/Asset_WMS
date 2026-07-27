@@ -1,11 +1,13 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Warehouse, Plus, Search, Edit2, Trash2, MapPin, Clock, User, DollarSign, Activity, Percent } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { Warehouse, Plus, Search, Edit2, Trash2, MapPin, Clock, User, DollarSign, Activity, Percent, ChevronRight } from 'lucide-react';
 import { useWarehouseStore } from '@/store/useWarehouseStore';
 import { MockWarehouse } from '@/lib/mock-data';
 
 export default function WarehousesPage() {
+  const router = useRouter();
   const { warehouses, companies, addWarehouse, updateWarehouse, deleteWarehouse } = useWarehouseStore();
   const [searchTerm, setSearchTerm] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -103,7 +105,7 @@ export default function WarehousesPage() {
         country,
         pinCode,
         companyId,
-        companyName: company?.name || 'Sangkaj Enterprises Ltd.',
+        companyName: company?.name || 'Sankaj Logistics Limited',
         managerName,
         capacity: Number(capacity),
         occupancy: Number(occupancy),
@@ -157,7 +159,8 @@ export default function WarehousesPage() {
         {filteredWarehouses.map((w) => (
           <div
             key={w.id}
-            className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm hover:shadow-md transition-all space-y-4"
+            onClick={() => router.push(`/dashboard/warehouses/${w.id}`)}
+            className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm hover:shadow-md hover:border-emerald-500/50 transition-all space-y-4 cursor-pointer group"
           >
             <div className="flex items-start justify-between">
               <div>
@@ -165,7 +168,10 @@ export default function WarehousesPage() {
                   <span className="text-xs font-mono font-extrabold px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">
                     {w.code}
                   </span>
-                  <h3 className="text-base font-bold text-slate-900 dark:text-white">{w.name}</h3>
+                  <h3 className="text-base font-bold text-slate-900 dark:text-white group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors flex items-center gap-1.5">
+                    {w.name}
+                    <ChevronRight className="w-4 h-4 text-slate-400 opacity-0 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all" />
+                  </h3>
                 </div>
                 <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 flex items-center gap-1">
                   <MapPin className="w-3.5 h-3.5 text-slate-400" /> {w.address}, {w.city}, {w.state} ({w.pinCode})
@@ -231,14 +237,22 @@ export default function WarehousesPage() {
               <span className="text-[11px] text-slate-400">Company: {w.companyName}</span>
               <div className="flex items-center gap-2">
                 <button
-                  onClick={() => handleOpenEdit(w)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleOpenEdit(w);
+                  }}
                   className="p-2 text-slate-600 dark:text-slate-300 hover:text-emerald-600 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors"
+                  title="Edit Warehouse"
                 >
                   <Edit2 className="w-4 h-4" />
                 </button>
                 <button
-                  onClick={() => deleteWarehouse(w.id)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    deleteWarehouse(w.id);
+                  }}
                   className="p-2 text-slate-600 dark:text-slate-300 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950 rounded-lg transition-colors"
+                  title="Delete Warehouse"
                 >
                   <Trash2 className="w-4 h-4" />
                 </button>

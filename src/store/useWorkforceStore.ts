@@ -102,6 +102,6 @@ export const useWorkforceStore = create<WorkforceState>()(
       addLeaveRequest: (req) => set((state) => ({ leaveRequests: [{ ...req, id: `lev-${Date.now()}`, status: 'PENDING' }, ...state.leaveRequests] })),
       updateLeaveStatus: (id, status) => set((state) => ({ leaveRequests: state.leaveRequests.map((l) => (l.id === id ? { ...l, status } : l)) })),
     }),
-    { name: 'ennea-workforce-storage' }
+    { name: 'sankaj-workforce-storage' }
   )
 );
