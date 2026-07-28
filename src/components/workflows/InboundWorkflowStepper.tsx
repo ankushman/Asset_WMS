@@ -81,20 +81,22 @@ export function InboundWorkflowStepper({ shipment }: InboundWorkflowStepperProps
             return shipment.steps.map((step, idx) => {
               const isCompleted = step.status === 'COMPLETED';
               const isActive = activeStepIndex !== -1 && idx === activeStepIndex;
+              const isEditable = isCompleted || isActive;
 
               return (
                 <div key={step.id} className="relative z-10 flex flex-col items-center group max-w-[100px] text-center">
                   {/* Circle Status Icon */}
                   <button
-                    onClick={() => handleOpenEdit(step)}
+                    onClick={() => isEditable && handleOpenEdit(step)}
+                    disabled={!isEditable}
                     className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-xs transition-all shadow-md ${
                       isCompleted
-                        ? 'bg-emerald-600 text-white ring-4 ring-emerald-100 dark:ring-emerald-950 border-2 border-emerald-500'
+                        ? 'bg-emerald-600 text-white ring-4 ring-emerald-100 dark:ring-emerald-950 border-2 border-emerald-500 cursor-pointer'
                         : isActive
-                        ? 'animate-orange-pulse bg-amber-500 text-white border-2 border-amber-400 ring-4 ring-amber-400/50 shadow-lg shadow-amber-500/50'
-                        : 'bg-white dark:bg-slate-800 text-slate-400 border-2 border-slate-300 dark:border-slate-700'
+                        ? 'animate-orange-pulse bg-amber-500 text-white border-2 border-amber-400 ring-4 ring-amber-400/50 shadow-lg shadow-amber-500/50 cursor-pointer'
+                        : 'bg-white dark:bg-slate-800 text-slate-400 border-2 border-slate-300 dark:border-slate-700 cursor-not-allowed opacity-75'
                     }`}
-                    title="Click to edit step details"
+                    title={isEditable ? "Click to edit step details" : "Step locked until previous step is completed"}
                   >
                     {isCompleted ? (
                       <CheckCircle2 className="w-5 h-5" />
@@ -128,13 +130,15 @@ export function InboundWorkflowStepper({ shipment }: InboundWorkflowStepperProps
                     )}
                   </div>
 
-                  {/* Edit Button trigger on hover */}
-                  <button
-                    onClick={() => handleOpenEdit(step)}
-                    className="mt-1 opacity-0 group-hover:opacity-100 transition-opacity text-[10px] text-royal-600 dark:text-royal-400 flex items-center gap-0.5 hover:underline"
-                  >
-                    <Edit3 className="w-2.5 h-2.5" /> Edit
-                  </button>
+                  {/* Edit Button trigger on hover only for active and completed steps */}
+                  {isEditable && (
+                    <button
+                      onClick={() => handleOpenEdit(step)}
+                      className="mt-1 opacity-0 group-hover:opacity-100 transition-opacity text-[10px] text-royal-600 dark:text-royal-400 flex items-center gap-0.5 hover:underline"
+                    >
+                      <Edit3 className="w-2.5 h-2.5" /> Edit
+                    </button>
+                  )}
                 </div>
               );
             });
@@ -154,12 +158,15 @@ export function InboundWorkflowStepper({ shipment }: InboundWorkflowStepperProps
             return shipment.steps.map((st, idx) => {
               const isCompleted = st.status === 'COMPLETED';
               const isActive = activeStepIndex !== -1 && idx === activeStepIndex;
+              const isEditable = isCompleted || isActive;
 
               return (
                 <div
                   key={st.id}
-                  onClick={() => handleOpenEdit(st)}
-                  className={`p-3.5 rounded-xl border text-xs cursor-pointer transition-all hover:shadow-md ${
+                  onClick={() => isEditable && handleOpenEdit(st)}
+                  className={`p-3.5 rounded-xl border text-xs transition-all ${
+                    isEditable ? 'cursor-pointer hover:shadow-md' : 'cursor-not-allowed opacity-80'
+                  } ${
                     isCompleted
                       ? 'bg-emerald-50/40 dark:bg-emerald-950/20 border-emerald-200 dark:border-emerald-900/50'
                       : isActive
