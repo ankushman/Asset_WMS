@@ -22,6 +22,7 @@ import { useAssetStore } from '@/store/useAssetStore';
 import { useWarehouseStore } from '@/store/useWarehouseStore';
 import { MockAsset } from '@/lib/mock-data';
 import { BarcodeQRGenerator } from '@/components/barcode/BarcodeQRGenerator';
+import { generateNextAssetId } from '@/lib/asset-utils';
 
 export default function AssetsPage() {
   const { assets, histories, addAsset, updateAsset, deleteAsset } = useAssetStore();
@@ -72,11 +73,21 @@ export default function AssetsPage() {
     return matchesSearch && matchesCat && matchesCond;
   });
 
+  const handleCategoryChange = (newCat: string) => {
+    setCategory(newCat);
+    if (!editingId) {
+      const generatedId = generateNextAssetId(newCat, assets);
+      setAssetCustomId(generatedId);
+    }
+  };
+
   const handleOpenAdd = () => {
     setEditingId(null);
-    setAssetCustomId(`AST-FORK-00${assets.length + 1}`);
+    const initialCat = 'Forklift';
+    setCategory(initialCat);
+    const autoAssetId = generateNextAssetId(initialCat, assets);
+    setAssetCustomId(autoAssetId);
     setName('');
-    setCategory('Forklift');
     setSerialNumber(`SN-TYT-${Date.now().toString().slice(-6)}`);
     setPurchaseDate('2025-01-15');
     setPurchaseCost(150000);
@@ -125,12 +136,13 @@ export default function AssetsPage() {
         image,
       });
     } else {
+      const finalAssetId = assetCustomId || generateNextAssetId(category, assets);
       addAsset({
-        assetCustomId,
+        assetCustomId: finalAssetId,
         name,
         category,
-        barcode: `BC-${assetCustomId}`,
-        qrCode: `QR-${assetCustomId}`,
+        barcode: `BC-${finalAssetId}`,
+        qrCode: `QR-${finalAssetId}`,
         serialNumber,
         purchaseDate,
         purchaseCost: Number(purchaseCost),
@@ -388,14 +400,17 @@ export default function AssetsPage() {
             <form onSubmit={handleSubmit} className="space-y-4 text-xs">
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Asset ID</label>
+                  <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                    Asset ID <span className="text-[10px] text-amber-600 dark:text-amber-400 font-normal">(Auto-generated)</span>
+                  </label>
                   <input
                     type="text"
                     value={assetCustomId}
-                    onChange={(e) => setAssetCustomId(e.target.value)}
+                    readOnly
+                    tabIndex={-1}
                     placeholder="AST-FORK-001"
-                    className="w-full p-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white font-mono"
-                    required
+                    className="w-full p-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800/80 text-slate-600 dark:text-slate-300 font-mono font-bold cursor-not-allowed select-none shadow-inner"
+                    title="Asset ID is automatically generated based on the selected category"
                   />
                 </div>
                 <div>
@@ -416,7 +431,7 @@ export default function AssetsPage() {
                   <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Category</label>
                   <select
                     value={category}
-                    onChange={(e) => setCategory(e.target.value)}
+                    onChange={(e) => handleCategoryChange(e.target.value)}
                     className="w-full p-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white font-medium"
                   >
                     {categories.map((c) => (
