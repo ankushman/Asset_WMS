@@ -1,16 +1,19 @@
 'use client';
 
 import React, { useState } from 'react';
-import { CheckCircle2, Clock, PlayCircle, Edit3, User, MessageSquare, Send, PackageCheck, Truck } from 'lucide-react';
+import { CheckCircle2, Clock, PlayCircle, Edit3, User, MessageSquare, Send, PackageCheck, Truck, Printer, FileText } from 'lucide-react';
 import { MockOutboundOrder, MockWorkflowStep } from '@/lib/mock-data';
 import { useWorkflowStore } from '@/store/useWorkflowStore';
+import { useAuthStore } from '@/store/useAuthStore';
+import { printGatePassPDF } from '@/lib/export-utils';
 
 interface OutboundWorkflowStepperProps {
   order: MockOutboundOrder;
 }
 
 export function OutboundWorkflowStepper({ order }: OutboundWorkflowStepperProps) {
-  const { updateOutboundStep } = useWorkflowStore();
+  const { updateOutboundStep, recordGatePassPrint } = useWorkflowStore();
+  const { user } = useAuthStore();
   const [editingStep, setEditingStep] = useState<MockWorkflowStep | null>(null);
 
   const [statusInput, setStatusInput] = useState<MockWorkflowStep['status']>('IN_PROGRESS');
@@ -18,13 +21,24 @@ export function OutboundWorkflowStepper({ order }: OutboundWorkflowStepperProps)
   const [remarksInput, setRemarksInput] = useState('');
   const [progressInput, setProgressInput] = useState(100);
 
-  // Transporter Handover custom fields
+  // Transporter Handover & Gate Pass custom fields
   const [transporterName, setTransporterName] = useState('VRL Logistics Ltd');
   const [driverName, setDriverName] = useState('Ramesh Kumar');
   const [driverPhone, setDriverPhone] = useState('+91 98765 12345');
   const [vehicleNo, setVehicleNo] = useState('MH-04-AB-1234');
   const [transportCompany, setTransportCompany] = useState('VRL Express Cargo');
   const [receiverSignature, setReceiverSignature] = useState('Verified Digital Sign');
+  const [dispatchDateTime, setDispatchDateTime] = useState(new Date().toLocaleString());
+
+  const isGatePassStep = editingStep?.stepName === 'Gate Pass';
+  const isPrintEnabled = Boolean(
+    vehicleNo.trim() &&
+      driverName.trim() &&
+      transporterName.trim() &&
+      dispatchDateTime.trim() &&
+      order.invoiceNo &&
+      order.orderCode
+  );
 
   const handleOpenEdit = (step: MockWorkflowStep) => {
     setEditingStep(step);
@@ -32,6 +46,36 @@ export function OutboundWorkflowStepper({ order }: OutboundWorkflowStepperProps)
     setEmployeeInput(step.employeeName === 'Unassigned' ? 'Rohan Deshmukh' : step.employeeName);
     setRemarksInput(step.remarks || '');
     setProgressInput(step.status === 'COMPLETED' ? 100 : step.progress || 100);
+    if (step.stepName === 'Gate Pass' && step.timestamp !== 'Pending') {
+      setDispatchDateTime(step.timestamp);
+    }
+  };
+
+  const handlePrintGatePass = () => {
+    if (!isPrintEnabled || !editingStep) return;
+
+    const printedBy = user?.name || employeeInput || 'Operations Supervisor';
+    recordGatePassPrint(order.id, printedBy);
+
+    printGatePassPDF({
+      gatePassNo: `GP-${order.orderCode}`,
+      orderCode: order.orderCode,
+      invoiceNo: order.invoiceNo,
+      customerName: order.customer,
+      warehouseName: order.warehouseName,
+      vehicleNumber: vehicleNo,
+      driverName: driverName,
+      driverPhone: driverPhone,
+      transporterName: transporterName,
+      transportCompany: transportCompany || transporterName,
+      dispatchDateTime: dispatchDateTime,
+      preparedBy: employeeInput || printedBy,
+      remarks: remarksInput,
+      totalItems: order.totalItems,
+      pickingType: order.pickingType,
+      printedBy: printedBy,
+      printedAt: new Date().toLocaleString(),
+    });
   };
 
   const handleSaveStep = (e: React.FormEvent) => {
@@ -43,6 +87,10 @@ export function OutboundWorkflowStepper({ order }: OutboundWorkflowStepperProps)
       finalRemarks = `Transporter: ${transporterName} (${transportCompany}) | Driver: ${driverName} (${driverPhone}) | Vehicle: ${vehicleNo} | Handover By: ${employeeInput}${
         receiverSignature ? ` | Signature: ${receiverSignature}` : ''
       }${remarksInput ? ` | Remarks: ${remarksInput}` : ''}`;
+    } else if (editingStep.stepName === 'Gate Pass') {
+      finalRemarks = `Gate Pass Ref: GP-${order.orderCode} | Vehicle: ${vehicleNo} | Driver: ${driverName} (${driverPhone}) | Transporter: ${transporterName}${
+        remarksInput ? ` | ${remarksInput}` : ''
+      }`;
     }
 
     updateOutboundStep(
@@ -252,16 +300,22 @@ export function OutboundWorkflowStepper({ order }: OutboundWorkflowStepperProps)
             <h3 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
               {editingStep.stepName === 'Handover to Transporter' ? (
                 <Truck className="w-5 h-5 text-amber-500" />
+              ) : isGatePassStep ? (
+                <FileText className="w-5 h-5 text-emerald-600" />
               ) : (
                 <PackageCheck className="w-5 h-5 text-indigo-600" />
               )}
               {editingStep.stepName === 'Handover to Transporter'
                 ? 'Handover to Transporter Details'
+                : isGatePassStep
+                ? 'Security Gate Pass Clearance & Print'
                 : `Edit Step: ${editingStep.stepName}`}
             </h3>
             <p className="text-xs text-slate-500 mt-1">
               {editingStep.stepName === 'Handover to Transporter'
                 ? 'Capture transporter dispatch, driver, vehicle details and handover confirmation.'
+                : isGatePassStep
+                ? 'Verify mandatory Gate Pass clearance details and generate official A4 print document.'
                 : 'Update status, operator details, and dispatch progress.'}
             </p>
 
@@ -274,11 +328,89 @@ export function OutboundWorkflowStepper({ order }: OutboundWorkflowStepperProps)
                   className="w-full p-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white font-medium"
                 >
                   <option value="IN_PROGRESS">IN_PROGRESS</option>
-                  <option value="COMPLETED">COMPLETED (Finish Order)</option>
+                  <option value="COMPLETED">COMPLETED (Finish Step)</option>
                   <option value="PENDING">PENDING</option>
                   <option value="ON_HOLD">ON_HOLD</option>
                 </select>
               </div>
+
+              {isGatePassStep && (
+                <div className="p-3.5 bg-emerald-50/70 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800/50 rounded-xl space-y-3">
+                  <div className="flex items-center justify-between border-b border-emerald-200/60 dark:border-emerald-900/40 pb-2">
+                    <h4 className="font-bold text-emerald-900 dark:text-emerald-300 text-xs flex items-center gap-1.5">
+                      <FileText className="w-4 h-4" /> Mandatory Gate Pass Fields
+                    </h4>
+                    <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-emerald-200 text-emerald-900 dark:bg-emerald-900 dark:text-emerald-200">
+                      GP-{order.orderCode}
+                    </span>
+                  </div>
+                  <div className="grid grid-cols-2 gap-2.5">
+                    <div>
+                      <label className="block font-medium text-slate-700 dark:text-slate-300 mb-1">Vehicle Number *</label>
+                      <input
+                        type="text"
+                        value={vehicleNo}
+                        onChange={(e) => setVehicleNo(e.target.value)}
+                        placeholder="e.g. MH-04-JK-9941"
+                        className="w-full p-2 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white font-bold"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label className="block font-medium text-slate-700 dark:text-slate-300 mb-1">Transporter / Company *</label>
+                      <input
+                        type="text"
+                        value={transporterName}
+                        onChange={(e) => setTransporterName(e.target.value)}
+                        placeholder="e.g. VRL Logistics Ltd"
+                        className="w-full p-2 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label className="block font-medium text-slate-700 dark:text-slate-300 mb-1">Driver Name *</label>
+                      <input
+                        type="text"
+                        value={driverName}
+                        onChange={(e) => setDriverName(e.target.value)}
+                        placeholder="e.g. Ramesh Kumar"
+                        className="w-full p-2 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label className="block font-medium text-slate-700 dark:text-slate-300 mb-1">Driver Phone *</label>
+                      <input
+                        type="text"
+                        value={driverPhone}
+                        onChange={(e) => setDriverPhone(e.target.value)}
+                        placeholder="e.g. +91 98765 12345"
+                        className="w-full p-2 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label className="block font-medium text-slate-700 dark:text-slate-300 mb-1">Dispatch Date & Time *</label>
+                      <input
+                        type="text"
+                        value={dispatchDateTime}
+                        onChange={(e) => setDispatchDateTime(e.target.value)}
+                        className="w-full p-2 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white font-mono"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label className="block font-medium text-slate-700 dark:text-slate-300 mb-1">Invoice Number</label>
+                      <input
+                        type="text"
+                        value={order.invoiceNo}
+                        disabled
+                        className="w-full p-2 rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-mono font-bold"
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
 
               {editingStep.stepName === 'Handover to Transporter' && (
                 <div className="p-3.5 bg-amber-50/70 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800/50 rounded-xl space-y-3">
@@ -356,7 +488,7 @@ export function OutboundWorkflowStepper({ order }: OutboundWorkflowStepperProps)
               )}
 
               <div>
-                <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Handover By (Warehouse Operator)</label>
+                <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Handover By / Prepared By Operator</label>
                 <input
                   type="text"
                   value={employeeInput}
@@ -378,7 +510,7 @@ export function OutboundWorkflowStepper({ order }: OutboundWorkflowStepperProps)
                 />
               </div>
 
-              <div className="flex justify-end gap-2 pt-2">
+              <div className="flex items-center justify-end gap-2 pt-2">
                 <button
                   type="button"
                   onClick={() => setEditingStep(null)}
@@ -390,8 +522,28 @@ export function OutboundWorkflowStepper({ order }: OutboundWorkflowStepperProps)
                   type="submit"
                   className="px-4 py-2 text-xs font-semibold text-white bg-amber-600 hover:bg-amber-700 rounded-xl shadow-md flex items-center gap-1.5"
                 >
-                  <CheckCircle2 className="w-4 h-4" /> Save & Complete Handover
+                  <CheckCircle2 className="w-4 h-4" /> {isGatePassStep ? 'Save Gate Pass' : 'Save Step'}
                 </button>
+
+                {isGatePassStep && (
+                  <button
+                    type="button"
+                    disabled={!isPrintEnabled}
+                    onClick={handlePrintGatePass}
+                    className={`px-4 py-2 text-xs font-semibold rounded-xl shadow-md flex items-center gap-1.5 transition-all ${
+                      isPrintEnabled
+                        ? 'bg-emerald-600 hover:bg-emerald-700 text-white cursor-pointer'
+                        : 'bg-slate-200 dark:bg-slate-800 text-slate-400 cursor-not-allowed opacity-60'
+                    }`}
+                    title={
+                      isPrintEnabled
+                        ? 'Generate and print official A4 Gate Pass'
+                        : 'Complete mandatory fields (Vehicle Number, Driver Name, Transporter) to enable printing'
+                    }
+                  >
+                    <Printer className="w-4 h-4" /> Print Gate Pass
+                  </button>
+                )}
               </div>
             </form>
           </div>

@@ -129,6 +129,8 @@ export interface MockOutboundOrder {
   warehouseName: string;
   status: 'COMPLETED' | 'IN_PROGRESS' | 'PENDING' | 'ON_HOLD';
   createdAt: string;
+  gatePassPrintedAt?: string;
+  gatePassPrintedBy?: string;
   steps: MockWorkflowStep[];
 }
 

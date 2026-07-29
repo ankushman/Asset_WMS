@@ -29,6 +29,7 @@ interface WorkflowState {
     employeeName: string,
     progress: number
   ) => void;
+  recordGatePassPrint: (orderId: string, printedBy: string) => void;
 }
 
 const DEFAULT_INBOUND_STEPS = [
@@ -171,6 +172,31 @@ export const useWorkflowStore = create<WorkflowState>()(
             return {
               ...o,
               status: overallStatus,
+              steps: updatedSteps,
+            };
+          }),
+        }));
+      },
+      recordGatePassPrint: (orderId, printedBy) => {
+        const printTime = new Date().toLocaleString();
+        set((state) => ({
+          outboundOrders: state.outboundOrders.map((o) => {
+            if (o.id !== orderId) return o;
+            const updatedSteps = o.steps.map((st) => {
+              if (st.stepName === 'Gate Pass') {
+                const printNote = `Printed on ${printTime} by ${printedBy}`;
+                return {
+                  ...st,
+                  remarks: st.remarks ? `${st.remarks} (${printNote})` : printNote,
+                };
+              }
+              return st;
+            });
+
+            return {
+              ...o,
+              gatePassPrintedAt: printTime,
+              gatePassPrintedBy: printedBy,
               steps: updatedSteps,
             };
           }),
