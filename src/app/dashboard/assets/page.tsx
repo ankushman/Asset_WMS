@@ -20,6 +20,7 @@ import {
 } from 'lucide-react';
 import { useAssetStore } from '@/store/useAssetStore';
 import { useWarehouseStore } from '@/store/useWarehouseStore';
+import { useAuthStore } from '@/store/useAuthStore';
 import { MockAsset } from '@/lib/mock-data';
 import { BarcodeQRGenerator } from '@/components/barcode/BarcodeQRGenerator';
 import { generateNextAssetId } from '@/lib/asset-utils';
@@ -27,6 +28,7 @@ import { generateNextAssetId } from '@/lib/asset-utils';
 export default function AssetsPage() {
   const { assets, histories, addAsset, updateAsset, deleteAsset } = useAssetStore();
   const { warehouses } = useWarehouseStore();
+  const { hasPermission } = useAuthStore();
 
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('ALL');
@@ -172,12 +174,14 @@ export default function AssetsPage() {
           </p>
         </div>
 
-        <button
-          onClick={handleOpenAdd}
-          className="px-4 py-2.5 text-xs font-bold text-white bg-royal-600 hover:bg-royal-500 rounded-xl shadow-md flex items-center gap-2 transition-all"
-        >
-          <Plus className="w-4 h-4" /> Register New Asset
-        </button>
+        {hasPermission('asset.create') && (
+          <button
+            onClick={handleOpenAdd}
+            className="px-4 py-2.5 text-xs font-bold text-white bg-royal-600 hover:bg-royal-500 rounded-xl shadow-md flex items-center gap-2 transition-all cursor-pointer"
+          >
+            <Plus className="w-4 h-4" /> Register New Asset
+          </button>
+        )}
       </div>
 
       {/* Filter and Search Bar */}
@@ -194,6 +198,7 @@ export default function AssetsPage() {
         </div>
 
         <div className="flex items-center gap-2 w-full sm:w-auto">
+          <Filter className="w-4 h-4 text-slate-400 hidden sm:block" />
           <select
             value={selectedCategory}
             onChange={(e) => setSelectedCategory(e.target.value)}
@@ -236,64 +241,72 @@ export default function AssetsPage() {
                   {asset.assetCustomId}
                 </span>
                 <span
-                  className={`absolute top-3 right-3 px-2.5 py-1 rounded-full font-bold text-[10px] uppercase shadow-md ${
+                  className={`absolute top-3 right-3 px-2.5 py-1 rounded-lg text-[10px] font-extrabold uppercase tracking-wider ${
                     asset.condition === 'AVAILABLE'
-                      ? 'bg-emerald-500 text-white'
+                      ? 'bg-emerald-500/90 text-white'
                       : asset.condition === 'IN_USE'
-                      ? 'bg-royal-500 text-white'
+                      ? 'bg-royal-600/90 text-white'
                       : asset.condition === 'MAINTENANCE'
-                      ? 'bg-amber-500 text-white'
-                      : 'bg-rose-500 text-white'
+                      ? 'bg-amber-500/90 text-white'
+                      : 'bg-rose-600/90 text-white'
                   }`}
                 >
-                  {asset.condition.replace('_', ' ')}
+                  {asset.condition}
                 </span>
               </div>
 
-              {/* Body Metadata */}
+              {/* Asset Info Body */}
               <div className="p-5 space-y-3">
                 <div>
-                  <h3 className="text-sm font-bold text-slate-900 dark:text-white leading-snug">
+                  <span className="text-[10px] font-bold text-royal-600 dark:text-royal-400 uppercase tracking-wider">
+                    {asset.category}
+                  </span>
+                  <h3 className="font-bold text-base text-slate-900 dark:text-white leading-tight">
                     {asset.name}
                   </h3>
-                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                    Category: <strong className="text-slate-700 dark:text-slate-200">{asset.category}</strong>
-                  </p>
                 </div>
 
-                <div className="space-y-1 text-xs text-slate-600 dark:text-slate-300 bg-slate-50 dark:bg-slate-800/40 p-3 rounded-xl border border-slate-100 dark:border-slate-800">
-                  <p className="flex justify-between">
-                    <span className="text-slate-400">Serial No:</span>
-                    <span className="font-mono font-semibold">{asset.serialNumber}</span>
-                  </p>
-                  <p className="flex justify-between">
-                    <span className="text-slate-400">Facility:</span>
-                    <span className="font-semibold text-royal-600 dark:text-royal-400">{asset.warehouseName}</span>
-                  </p>
-                  <p className="flex justify-between">
-                    <span className="text-slate-400">Assigned To:</span>
-                    <span className="font-semibold">{asset.assignedEmployeeName || 'Unassigned'}</span>
-                  </p>
-                  <p className="flex justify-between">
-                    <span className="text-slate-400">Warranty Expiry:</span>
-                    <span className="font-mono text-emerald-600 dark:text-emerald-400">{asset.warrantyExpiry}</span>
-                  </p>
+                <div className="space-y-1 text-xs text-slate-600 dark:text-slate-400 font-medium">
+                  <div className="flex justify-between">
+                    <span>Serial No:</span>
+                    <span className="font-mono font-semibold text-slate-900 dark:text-slate-200">
+                      {asset.serialNumber}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Facility:</span>
+                    <span className="font-semibold text-slate-900 dark:text-slate-200">
+                      {asset.warehouseName}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Assigned To:</span>
+                    <span className="font-semibold text-slate-900 dark:text-slate-200">
+                      {asset.assignedEmployeeName || 'Unassigned'}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Purchase Cost:</span>
+                    <span className="font-mono font-bold text-slate-900 dark:text-slate-200">
+                      ₹{asset.purchaseCost.toLocaleString()}
+                    </span>
+                  </div>
                 </div>
               </div>
             </div>
 
-            {/* Footer Action Buttons */}
-            <div className="px-5 py-3.5 bg-slate-50 dark:bg-slate-950 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between">
+            {/* Footer Bar Actions */}
+            <div className="p-4 bg-slate-50 dark:bg-slate-950 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => setViewLabelAsset(asset)}
-                  className="px-2.5 py-1 text-xs font-semibold text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg hover:bg-slate-100 flex items-center gap-1"
+                  className="px-2.5 py-1 text-xs font-semibold text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg hover:bg-slate-100 flex items-center gap-1 cursor-pointer"
                 >
                   <BarcodeIcon className="w-3.5 h-3.5 text-royal-600" /> Barcode/QR
                 </button>
                 <button
                   onClick={() => setViewHistoryAsset(asset)}
-                  className="p-1.5 text-slate-600 dark:text-slate-300 hover:text-royal-600 hover:bg-slate-200 dark:hover:bg-slate-800 rounded-lg"
+                  className="p-1.5 text-slate-600 dark:text-slate-300 hover:text-royal-600 hover:bg-slate-200 dark:hover:bg-slate-800 rounded-lg cursor-pointer"
                   title="View Audit History"
                 >
                   <History className="w-4 h-4" />
@@ -301,18 +314,24 @@ export default function AssetsPage() {
               </div>
 
               <div className="flex items-center gap-1">
-                <button
-                  onClick={() => handleOpenEdit(asset)}
-                  className="p-1.5 text-slate-600 dark:text-slate-300 hover:text-royal-600 hover:bg-slate-200 dark:hover:bg-slate-800 rounded-lg"
-                >
-                  <Edit2 className="w-4 h-4" />
-                </button>
-                <button
-                  onClick={() => deleteAsset(asset.id)}
-                  className="p-1.5 text-slate-600 dark:text-slate-300 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950 rounded-lg"
-                >
-                  <Trash2 className="w-4 h-4" />
-                </button>
+                {hasPermission('asset.edit') && (
+                  <button
+                    onClick={() => handleOpenEdit(asset)}
+                    className="p-1.5 text-slate-600 dark:text-slate-300 hover:text-royal-600 hover:bg-slate-200 dark:hover:bg-slate-800 rounded-lg cursor-pointer"
+                    title="Edit Asset"
+                  >
+                    <Edit2 className="w-4 h-4" />
+                  </button>
+                )}
+                {hasPermission('asset.delete') && (
+                  <button
+                    onClick={() => deleteAsset(asset.id)}
+                    className="p-1.5 text-slate-600 dark:text-slate-300 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950 rounded-lg cursor-pointer"
+                    title="Delete Asset"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                )}
               </div>
             </div>
           </div>

@@ -2,9 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import { useAuthStore } from '@/store/useAuthStore';
-import { LoginModal } from '@/components/auth/LoginModal';
 import {
   Warehouse,
   Box,
@@ -23,20 +21,8 @@ import {
 } from 'lucide-react';
 
 export default function LandingPage() {
-  const router = useRouter();
   const { isAuthenticated } = useAuthStore();
-
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
-
-  const handleSignInClick = (e: React.MouseEvent) => {
-    e.preventDefault();
-    if (isAuthenticated) {
-      router.push('/dashboard');
-    } else {
-      setIsLoginModalOpen(true);
-    }
-  };
 
   const features = [
     {
@@ -128,27 +114,23 @@ export default function LandingPage() {
           <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-slate-300">
             <Link href="/" className="text-royal-400 font-semibold">Home</Link>
             <a href="#features" className="hover:text-white transition-colors">Features</a>
-            <a href="#solutions" className="hover:text-white transition-colors">Solutions</a>
-            <span className="flex items-center gap-1 text-slate-400 cursor-not-allowed">
-              Pricing <span className="px-1.5 py-0.5 text-[9px] font-bold rounded bg-royal-950 text-royal-400 border border-royal-800">Coming Soon</span>
-            </span>
-            <a href="#testimonials" className="hover:text-white transition-colors">Testimonials</a>
-            <a href="#faq" className="hover:text-white transition-colors">FAQ</a>
+            <a href="#about" className="hover:text-white transition-colors">About</a>
+            <a href="#contact" className="hover:text-white transition-colors">Contact</a>
           </nav>
 
           {/* Action CTA Buttons */}
           <div className="hidden md:flex items-center gap-4">
-            <button
-              onClick={handleSignInClick}
-              className="px-4 py-2 text-sm font-semibold text-slate-200 hover:text-white hover:bg-slate-900 rounded-xl border border-slate-800 transition-all cursor-pointer"
-            >
-              Sign In
-            </button>
             <Link
-              href="/dashboard"
+              href="/login"
+              className="px-4 py-2 text-sm font-semibold text-slate-200 hover:text-white hover:bg-slate-900 rounded-xl border border-slate-800 transition-all"
+            >
+              Login
+            </Link>
+            <Link
+              href="/register"
               className="px-5 py-2.5 text-sm font-semibold text-white bg-gradient-to-r from-royal-600 to-royal-500 hover:from-royal-500 hover:to-royal-400 rounded-xl shadow-lg shadow-royal-900/50 hover:shadow-royal-600/30 transition-all flex items-center gap-2"
             >
-              Get Started <ArrowRight className="w-4 h-4" />
+              Register Company <ArrowRight className="w-4 h-4" />
             </Link>
           </div>
 
@@ -166,19 +148,23 @@ export default function LandingPage() {
           <div className="md:hidden bg-navy-900 border-b border-slate-800 px-6 py-4 space-y-3 text-sm">
             <Link href="/" className="block py-1 text-royal-400 font-semibold">Home</Link>
             <a href="#features" onClick={() => setMobileMenuOpen(false)} className="block py-1 text-slate-300">Features</a>
-            <a href="#solutions" onClick={() => setMobileMenuOpen(false)} className="block py-1 text-slate-300">Solutions</a>
-            <a href="#testimonials" onClick={() => setMobileMenuOpen(false)} className="block py-1 text-slate-300">Testimonials</a>
+            <a href="#about" onClick={() => setMobileMenuOpen(false)} className="block py-1 text-slate-300">About</a>
+            <a href="#contact" onClick={() => setMobileMenuOpen(false)} className="block py-1 text-slate-300">Contact</a>
             <div className="pt-3 border-t border-slate-800 flex flex-col gap-2">
-              <button
-                onClick={(e) => {
-                  setMobileMenuOpen(false);
-                  handleSignInClick(e);
-                }}
+              <Link
+                href="/login"
+                onClick={() => setMobileMenuOpen(false)}
                 className="w-full py-2 text-center text-slate-200 bg-slate-800 rounded-xl font-semibold"
               >
-                Sign In
-              </button>
-              <Link href="/dashboard" className="w-full py-2 text-center text-white bg-royal-600 rounded-xl font-semibold">Get Started</Link>
+                Login
+              </Link>
+              <Link
+                href="/register"
+                onClick={() => setMobileMenuOpen(false)}
+                className="w-full py-2 text-center text-white bg-royal-600 rounded-xl font-semibold"
+              >
+                Register Company
+              </Link>
             </div>
           </div>
         )}
@@ -206,18 +192,18 @@ export default function LandingPage() {
 
           <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link
-              href="/dashboard"
+              href={isAuthenticated ? '/dashboard' : '/login'}
               className="w-full sm:w-auto px-8 py-4 text-base font-bold text-white bg-gradient-to-r from-royal-600 to-royal-500 hover:from-royal-500 hover:to-royal-400 rounded-2xl shadow-xl shadow-royal-900/50 hover:shadow-royal-600/40 transition-all flex items-center justify-center gap-2 group"
             >
-              Launch Live WMS Portal
+              {isAuthenticated ? 'Go to Dashboard' : 'Login to Portal'}
               <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </Link>
-            <button
-              onClick={handleSignInClick}
-              className="w-full sm:w-auto px-8 py-4 text-base font-bold text-slate-200 hover:text-white bg-slate-900/80 hover:bg-slate-800 rounded-2xl border border-slate-700/80 transition-all flex items-center justify-center gap-2 cursor-pointer"
+            <Link
+              href="/register"
+              className="w-full sm:w-auto px-8 py-4 text-base font-bold text-slate-200 hover:text-white bg-slate-900/80 hover:bg-slate-800 rounded-2xl border border-slate-700/80 transition-all flex items-center justify-center gap-2"
             >
-              Access Enterprise Portal
-            </button>
+              Register Company
+            </Link>
           </div>
 
           {/* Interactive Enterprise Mockup Showcase */}
@@ -295,8 +281,8 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Solutions / Module Overview Section */}
-      <section id="solutions" className="py-24 px-6">
+      {/* About / Solutions Section */}
+      <section id="about" className="py-24 px-6">
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div>
@@ -323,7 +309,7 @@ export default function LandingPage() {
               </ul>
               <div className="mt-8">
                 <Link
-                  href="/dashboard/inbound"
+                  href="/login"
                   className="inline-flex items-center gap-2 text-sm font-bold text-royal-400 hover:text-royal-300"
                 >
                   Explore Inbound Workflow <ArrowRight className="w-4 h-4" />
@@ -368,7 +354,7 @@ export default function LandingPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {testimonials.map((t, i) => (
               <div key={i} className="p-8 rounded-2xl bg-navy-950 border border-slate-800 space-y-4">
-                <p className="text-sm text-slate-300 italic">"{t.quote}"</p>
+                <p className="text-sm text-slate-300 italic">&quot;{t.quote}&quot;</p>
                 <div className="flex items-center gap-3 pt-2">
                   <img src={t.avatar} alt={t.name} className="w-10 h-10 rounded-full object-cover ring-2 ring-royal-500/30" />
                   <div>
@@ -402,7 +388,7 @@ export default function LandingPage() {
       </section>
 
       {/* Footer */}
-      <footer className="bg-navy-950 border-t border-slate-800/80 pt-16 pb-12 px-6 text-slate-400 text-xs">
+      <footer id="contact" className="bg-navy-950 border-t border-slate-800/80 pt-16 pb-12 px-6 text-slate-400 text-xs">
         <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-10 pb-12 border-b border-slate-800/80">
           <div className="space-y-3">
             <div className="flex items-center gap-2.5">
@@ -419,11 +405,11 @@ export default function LandingPage() {
           <div>
             <h5 className="font-bold text-white uppercase tracking-wider mb-3">Modules</h5>
             <ul className="space-y-2">
-              <li><Link href="/dashboard/warehouses" className="hover:text-white">Warehouse Hub</Link></li>
-              <li><Link href="/dashboard/assets" className="hover:text-white">Asset Tracking</Link></li>
-              <li><Link href="/dashboard/inventory" className="hover:text-white">Inventory Control</Link></li>
-              <li><Link href="/dashboard/inbound" className="hover:text-white">Inbound Receiving</Link></li>
-              <li><Link href="/dashboard/outbound" className="hover:text-white">Outbound Dispatch</Link></li>
+              <li><Link href="/login" className="hover:text-white">Warehouse Hub</Link></li>
+              <li><Link href="/login" className="hover:text-white">Asset Tracking</Link></li>
+              <li><Link href="/login" className="hover:text-white">Inventory Control</Link></li>
+              <li><Link href="/login" className="hover:text-white">Inbound Receiving</Link></li>
+              <li><Link href="/login" className="hover:text-white">Outbound Dispatch</Link></li>
             </ul>
           </div>
 
@@ -456,9 +442,6 @@ export default function LandingPage() {
           </div>
         </div>
       </footer>
-
-      {/* Login Modal Overlay */}
-      <LoginModal isOpen={isLoginModalOpen} onClose={() => setIsLoginModalOpen(false)} />
     </div>
   );
 }

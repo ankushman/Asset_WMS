@@ -4,12 +4,12 @@ import React, { useState } from 'react';
 import { Users, Plus, Search, ShieldCheck, Mail, Phone, Warehouse, Edit2, Trash2, Key, CheckCircle2, XCircle } from 'lucide-react';
 import { useAuthStore } from '@/store/useAuthStore';
 import { useWarehouseStore } from '@/store/useWarehouseStore';
-import { INITIAL_USERS, MockUser } from '@/lib/mock-data';
+import { MockUser } from '@/lib/mock-data';
 import { UserRole } from '@/lib/rbac';
 
 export default function UsersPage() {
   const { warehouses } = useWarehouseStore();
-  const [usersList, setUsersList] = useState<MockUser[]>(INITIAL_USERS);
+  const [usersList, setUsersList] = useState<MockUser[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedRoleFilter, setSelectedRoleFilter] = useState<string>('ALL');
 

@@ -13,7 +13,7 @@ interface OutboundWorkflowStepperProps {
 
 export function OutboundWorkflowStepper({ order }: OutboundWorkflowStepperProps) {
   const { updateOutboundStep, recordGatePassPrint } = useWorkflowStore();
-  const { user } = useAuthStore();
+  const { user, hasPermission } = useAuthStore();
   const [editingStep, setEditingStep] = useState<MockWorkflowStep | null>(null);
 
   const [statusInput, setStatusInput] = useState<MockWorkflowStep['status']>('IN_PROGRESS');
@@ -525,7 +525,7 @@ export function OutboundWorkflowStepper({ order }: OutboundWorkflowStepperProps)
                   <CheckCircle2 className="w-4 h-4" /> {isGatePassStep ? 'Save Gate Pass' : 'Save Step'}
                 </button>
 
-                {isGatePassStep && (
+                {isGatePassStep && hasPermission('gatepass.print') && (
                   <button
                     type="button"
                     disabled={!isPrintEnabled}

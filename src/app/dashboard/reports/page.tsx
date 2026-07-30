@@ -6,6 +6,7 @@ import { useAssetStore } from '@/store/useAssetStore';
 import { useWarehouseStore } from '@/store/useWarehouseStore';
 import { useInventoryStore } from '@/store/useInventoryStore';
 import { useWorkflowStore } from '@/store/useWorkflowStore';
+import { useAuthStore } from '@/store/useAuthStore';
 import { exportToCSV, exportToExcel, exportToPDF } from '@/lib/export-utils';
 
 export default function ReportsPage() {
@@ -13,6 +14,7 @@ export default function ReportsPage() {
   const { warehouses } = useWarehouseStore();
   const { items: inventoryItems } = useInventoryStore();
   const { inboundShipments, outboundOrders } = useWorkflowStore();
+  const { hasPermission } = useAuthStore();
 
   const handleExportAssets = (format: 'pdf' | 'excel' | 'csv') => {
     const data = assets.map((a) => ({

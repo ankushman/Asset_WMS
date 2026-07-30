@@ -4,7 +4,7 @@ import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useAuthStore } from '@/store/useAuthStore';
-import { ROLE_NAVIGATION, NavItem } from '@/lib/rbac';
+import { getNavForPermissions, NavItem } from '@/lib/rbac';
 import {
   LayoutDashboard,
   Building2,
@@ -38,6 +38,11 @@ import {
   Plug,
   Radio,
   ShieldCheck,
+  User,
+  Settings2,
+  GitBranchPlus,
+  ListChecks,
+  BellRing,
 } from 'lucide-react';
 
 const iconMap: Record<string, React.ReactNode> = {
@@ -59,6 +64,7 @@ const iconMap: Record<string, React.ReactNode> = {
   FileText: <FileText className="w-4 h-4" />,
   Calendar: <Calendar className="w-4 h-4" />,
   Users: <Users className="w-4 h-4" />,
+  User: <User className="w-4 h-4" />,
   BarChart3: <BarChart3 className="w-4 h-4" />,
   Sparkles: <Sparkles className="w-4 h-4" />,
   Bot: <Bot className="w-4 h-4" />,
@@ -72,6 +78,10 @@ const iconMap: Record<string, React.ReactNode> = {
   Plug: <Plug className="w-4 h-4" />,
   Radio: <Radio className="w-4 h-4" />,
   ShieldCheck: <ShieldCheck className="w-4 h-4" />,
+  Settings2: <Settings2 className="w-4 h-4" />,
+  GitBranchPlus: <GitBranchPlus className="w-4 h-4" />,
+  ListChecks: <ListChecks className="w-4 h-4" />,
+  BellRing: <BellRing className="w-4 h-4" />,
 };
 
 export function DashboardSidebar() {
@@ -79,7 +89,7 @@ export function DashboardSidebar() {
   const { user } = useAuthStore();
 
   const role = user?.role || 'SUPER_ADMIN';
-  const navItems: NavItem[] = ROLE_NAVIGATION[role] || ROLE_NAVIGATION['SUPER_ADMIN'];
+  const navItems: NavItem[] = getNavForPermissions(user?.permissions);
 
   return (
     <aside className="w-64 bg-[#111827] text-slate-300 flex flex-col border-r border-slate-800 select-none flex-shrink-0 min-h-screen">
@@ -109,15 +119,15 @@ export function DashboardSidebar() {
           <div className="w-2 h-2 rounded-full bg-emerald-500 flex-shrink-0" />
           <div className="truncate">
             <p className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Active Role</p>
-            <p className="text-xs font-semibold text-slate-200 truncate">{role.replace('_', ' ')}</p>
+            <p className="text-xs font-semibold text-slate-200 truncate">{role.replace(/_/g, ' ')}</p>
           </div>
         </div>
       </div>
 
-      {/* Navigation Links */}
+      {/* Dynamic Navigation Links */}
       <nav className="flex-1 px-3 py-4 space-y-0.5 overflow-y-auto max-h-[calc(100vh-180px)]">
         <div className="px-3 pb-2 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
-          System Modules
+          System Modules ({navItems.length})
         </div>
 
         {navItems.map((item) => {

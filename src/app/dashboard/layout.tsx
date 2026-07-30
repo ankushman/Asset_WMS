@@ -34,7 +34,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     return () => window.removeEventListener('keydown', handleGlobalKeyDown);
   }, []);
 
-  const hasAccess = user ? canAccessPath(user.role, pathname) : true;
+  const hasAccess = user ? canAccessPath(user.permissions, pathname) : true;
 
   if (!isAuthenticated) return null;
 

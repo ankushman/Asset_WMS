@@ -1,20 +1,17 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from '../prisma.service';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import { Warehouse, WarehouseDocument } from '../schemas/warehouse.schema';
 
 @Injectable()
 export class WarehousesService {
-  constructor(private prisma: PrismaService) {}
+  constructor(@InjectModel(Warehouse.name) private warehouseModel: Model<WarehouseDocument>) {}
 
   async findAll() {
     try {
-      const warehouses = await this.prisma.warehouse.findMany({
-        where: { deletedAt: null },
-        include: { company: true, manager: true },
-      });
+      const warehouses = await this.warehouseModel.find().exec();
       if (warehouses.length > 0) return warehouses;
-    } catch (e) {
-      // Fallback data if DB is not migrated
-    }
+    } catch (e) {}
 
     return [
       {
@@ -69,15 +66,18 @@ export class WarehousesService {
   }
 
   async findOne(id: string) {
+    try {
+      const found = await this.warehouseModel.findById(id).exec();
+      if (found) return found;
+    } catch (e) {}
+
     const list = await this.findAll();
-    const found = list.find((w) => w.id === id);
-    if (found) return found;
     return list[0];
   }
 
   async create(data: any) {
     try {
-      return await this.prisma.warehouse.create({ data });
+      return await this.warehouseModel.create(data);
     } catch (e) {
       return { id: `wh-${Date.now()}`, ...data, createdAt: new Date().toISOString() };
     }

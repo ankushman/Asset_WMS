@@ -33,12 +33,14 @@ export interface MockWarehouse {
   createdAt: string;
 }
 
+import { UserRole } from '@/lib/rbac';
+
 export interface MockUser {
   id: string;
   name: string;
   email: string;
   phone: string;
-  role: 'SUPER_ADMIN' | 'COMPANY_ADMIN' | 'WAREHOUSE_MANAGER' | 'SUPERVISOR' | 'INVENTORY_EXECUTIVE' | 'PICKER' | 'PACKER' | 'VIEWER';
+  role: UserRole;
   companyId?: string;
   warehouseId?: string;
   warehouseName?: string;

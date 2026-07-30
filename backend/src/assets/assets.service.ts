@@ -1,5 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from '../prisma.service';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import { Asset, AssetDocument } from '../schemas/asset.schema';
 
 const CATEGORY_MAP: Record<string, string> = {
   Forklift: 'FORK',
@@ -20,7 +22,7 @@ const CATEGORY_MAP: Record<string, string> = {
 
 @Injectable()
 export class AssetsService {
-  constructor(private prisma: PrismaService) {}
+  constructor(@InjectModel(Asset.name) private assetModel: Model<AssetDocument>) {}
 
   generateNextAssetId(categoryName: string, existingList: any[]): string {
     const code = CATEGORY_MAP[categoryName] || categoryName.replace(/[^a-zA-Z0-9]/g, '').toUpperCase().slice(0, 4) || 'AST';
@@ -28,7 +30,7 @@ export class AssetsService {
 
     let maxSeq = 0;
     existingList.forEach((ast) => {
-      const customId = ast.assetCustomId || '';
+      const customId = ast.assetCustomId || ast.assetCode || '';
       if (customId.toUpperCase().startsWith(prefix)) {
         const match = customId.match(/AST-[A-Z0-9]+-(\d+)/i);
         if (match && match[1]) {
@@ -44,10 +46,7 @@ export class AssetsService {
 
   async findAll() {
     try {
-      const dbAssets = await this.prisma.asset.findMany({
-        where: { deletedAt: null },
-        include: { warehouse: true },
-      });
+      const dbAssets = await this.assetModel.find().exec();
       if (dbAssets.length > 0) return dbAssets;
     } catch (e) {}
 
@@ -90,44 +89,6 @@ export class AssetsService {
         image: 'https://images.unsplash.com/photo-1616401784845-180882ba9ba8?auto=format&fit=crop&w=400&q=80',
         createdAt: '2025-01-18T10:30:00Z',
       },
-      {
-        id: 'ast-003',
-        assetCustomId: 'AST-PRN-055',
-        name: 'Zebra ZT411 Industrial Thermal Label Printer',
-        category: 'Printer',
-        barcode: 'BC-AST-664099',
-        qrCode: 'QR-AST-PRN-055',
-        serialNumber: 'SN-ZBR-ZT411-88',
-        purchaseDate: '2024-08-20',
-        purchaseCost: 145000,
-        vendor: 'PrintTech Solutions India',
-        warrantyExpiry: '2026-08-20',
-        warehouseId: 'wh-002',
-        warehouseName: 'Delhi North Logistics Park',
-        assignedEmployeeName: 'Suresh Patil',
-        condition: 'IN_USE',
-        image: 'https://images.unsplash.com/photo-1612815150548-9968a3562479?auto=format&fit=crop&w=400&q=80',
-        createdAt: '2025-01-20T11:45:00Z',
-      },
-      {
-        id: 'ast-004',
-        assetCustomId: 'AST-LAP-901',
-        name: 'Dell Precision 7680 Workstation i9 64GB',
-        category: 'Laptop',
-        barcode: 'BC-AST-110293',
-        qrCode: 'QR-AST-LAP-901',
-        serialNumber: 'DELL-PR76-MUM-01',
-        purchaseDate: '2024-11-05',
-        purchaseCost: 220000,
-        vendor: 'Dell India Enterprise',
-        warrantyExpiry: '2027-11-05',
-        warehouseId: 'wh-001',
-        warehouseName: 'Mumbai Central Mega Hub',
-        assignedEmployeeName: 'Rajesh Sharma',
-        condition: 'IN_USE',
-        image: 'https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?auto=format&fit=crop&w=400&q=80',
-        createdAt: '2025-01-25T08:20:00Z',
-      },
     ];
   }
 
@@ -136,8 +97,7 @@ export class AssetsService {
     const autoAssetId = this.generateNextAssetId(data.category || 'Forklift', list);
 
     const assetToSave = {
-      id: `ast-${Date.now()}`,
-      assetCustomId: autoAssetId,
+      assetCode: autoAssetId,
       barcode: `BC-${autoAssetId}`,
       qrCode: `QR-${autoAssetId}`,
       createdAt: new Date().toISOString(),
@@ -145,7 +105,7 @@ export class AssetsService {
     };
 
     try {
-      return await this.prisma.asset.create({ data: assetToSave });
+      return await this.assetModel.create(assetToSave);
     } catch (e) {
       return assetToSave;
     }
