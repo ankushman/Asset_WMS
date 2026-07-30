@@ -5,7 +5,7 @@ export type UserDocument = User & Document;
 
 @Schema({ timestamps: true })
 export class User {
-  @Prop({ required: true, unique: true })
+  @Prop({ required: true, unique: true, index: true })
   email: string;
 
   @Prop({ required: true })
@@ -17,16 +17,16 @@ export class User {
   @Prop()
   phone: string;
 
-  @Prop({ default: 'VIEWER' })
+  @Prop({ default: 'VIEWER', index: true })
   role: string;
 
-  @Prop({ default: 'ACTIVE' })
+  @Prop({ default: 'ACTIVE', index: true })
   accountStatus: string;
 
-  @Prop()
+  @Prop({ index: true })
   companyId: string;
 
-  @Prop()
+  @Prop({ index: true })
   warehouseId: string;
 
   @Prop()
@@ -58,3 +58,5 @@ export class User {
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
+UserSchema.index({ companyId: 1, email: 1 });
+UserSchema.index({ companyId: 1, role: 1 });

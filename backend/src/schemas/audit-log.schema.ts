@@ -3,31 +3,43 @@ import { Document } from 'mongoose';
 
 export type AuditLogRecordDocument = AuditLogRecord & Document;
 
-@Schema({ timestamps: true })
+@Schema({ timestamps: true, collection: 'audit_logs' })
 export class AuditLogRecord {
-  @Prop({ required: true })
-  performedBy: string;
+  @Prop({ index: true })
+  userId: string;
 
-  @Prop({ required: true })
-  performedByName: string;
+  @Prop()
+  userName: string;
 
-  @Prop({ required: true })
+  @Prop({ index: true })
   companyId: string;
 
-  @Prop()
-  targetUser: string;
-
-  @Prop()
-  targetUserName: string;
-
-  @Prop({ required: true })
+  @Prop({ required: true, index: true })
   action: string;
+
+  @Prop({ index: true })
+  module: string;
+
+  @Prop({ index: true })
+  entityId: string;
 
   @Prop()
   details: string;
 
+  @Prop({ type: Object })
+  oldValues: Record<string, any>;
+
+  @Prop({ type: Object })
+  newValues: Record<string, any>;
+
   @Prop()
   ipAddress: string;
+
+  @Prop()
+  userAgent: string;
 }
 
 export const AuditLogRecordSchema = SchemaFactory.createForClass(AuditLogRecord);
+AuditLogRecordSchema.index({ companyId: 1, createdAt: -1 });
+AuditLogRecordSchema.index({ userId: 1, createdAt: -1 });
+AuditLogRecordSchema.index({ module: 1, action: 1 });

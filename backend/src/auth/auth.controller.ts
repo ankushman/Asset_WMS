@@ -1,6 +1,7 @@
 import { Controller, Post, Body, Get, Param } from '@nestjs/common';
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
+import { Public } from './public.decorator';
 
 class LoginDto {
   email: string;
@@ -12,6 +13,7 @@ class LoginDto {
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
+  @Public()
   @Post('login')
   @ApiOperation({ summary: 'User login for Sankaj Logistics WMS' })
   async login(@Body() body: LoginDto) {

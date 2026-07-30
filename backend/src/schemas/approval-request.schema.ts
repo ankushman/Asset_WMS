@@ -65,22 +65,22 @@ export class ApprovalHistoryRecordSub {
 
 @Schema({ timestamps: true })
 export class ApprovalRequestV2 {
-  @Prop({ required: true, unique: true })
+  @Prop({ required: true, unique: true, index: true })
   requestCode: string;
 
-  @Prop({ required: true })
+  @Prop({ required: true, index: true })
   companyId: string;
 
-  @Prop()
+  @Prop({ index: true })
   warehouseId: string;
 
   @Prop()
   warehouseName: string;
 
-  @Prop()
+  @Prop({ index: true })
   workflowDefinitionId: string;
 
-  @Prop({ required: true })
+  @Prop({ required: true, index: true })
   workflowType: string;
 
   @Prop({ required: true })
@@ -110,19 +110,19 @@ export class ApprovalRequestV2 {
   @Prop({ default: 1 })
   totalLevels: number;
 
-  @Prop({ default: 'DRAFT' })
+  @Prop({ default: 'DRAFT', index: true })
   status: string;
 
-  @Prop({ default: 'NONE' })
+  @Prop({ default: 'NONE', index: true })
   escalationStatus: string;
 
-  @Prop({ required: true })
+  @Prop({ required: true, index: true })
   makerUserId: string;
 
   @Prop({ required: true })
   makerUserName: string;
 
-  @Prop()
+  @Prop({ index: true })
   currentApproverId: string;
 
   @Prop()
@@ -142,3 +142,6 @@ export class ApprovalRequestV2 {
 }
 
 export const ApprovalRequestV2Schema = SchemaFactory.createForClass(ApprovalRequestV2);
+ApprovalRequestV2Schema.index({ companyId: 1, status: 1 });
+ApprovalRequestV2Schema.index({ currentApproverId: 1, status: 1 });
+ApprovalRequestV2Schema.index({ makerUserId: 1, createdAt: -1 });

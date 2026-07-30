@@ -1,6 +1,7 @@
 import { Controller, Get, Post, Patch, Param, Body, Query } from '@nestjs/common';
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
 import { EmployeesService } from './employees.service';
+import { Public } from '../auth/public.decorator';
 
 @ApiTags('Employee Roster & Invitation Management')
 @Controller('api/v1/employees')
@@ -19,6 +20,7 @@ export class EmployeesController {
     return this.employeesService.invite(body);
   }
 
+  @Public()
   @Post('activate/:token')
   @ApiOperation({ summary: 'Activate invited employee account and set permanent password' })
   async activate(@Param('token') token: string, @Body() body: any) {

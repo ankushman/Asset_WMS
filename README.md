@@ -1,126 +1,77 @@
-# Ennea – Sangkaj | Enterprise Asset Management Tracker & Warehouse Management System (WMS)
+# Sankaj Logistics Limited - Enterprise Asset Tracker & Warehouse Management System (WMS)
 
-Production-ready Phase 1 (MVP) platform built with Next.js 15 (App Router), React 19, TypeScript, Tailwind CSS, Prisma ORM, PostgreSQL, Recharts, and Zustand.
-
----
-
-## Technical Stack & Architecture
-
-### Frontend
-- **Framework**: Next.js 15 (App Router) + React 19 + TypeScript
-- **Styling**: Tailwind CSS + Custom Navy/Royal Blue Dark & Light Enterprise Theme
-- **State Management**: Zustand with persistent storage
-- **UI Components**: Modern enterprise data tables, Recharts visualizations, Lucide icons, glassmorphism UI elements
-- **Barcode & QR Generator**: Real-time SVG rendering and printable thermal label layouts
-
-### Backend & Database
-- **ORM**: Prisma ORM v6 with normalized PostgreSQL relational schema
-- **Authentication**: JWT, bcryptjs password hashing, email login, Google SSO integration, 7-day session cookies
-- **RBAC**: 8 Granular Roles (`SUPER_ADMIN`, `COMPANY_ADMIN`, `WAREHOUSE_MANAGER`, `SUPERVISOR`, `INVENTORY_EXECUTIVE`, `PICKER`, `PACKER`, `VIEWER`)
-- **Microservices Option**: NestJS API architecture located in `/backend` directory for microservice separation on Railway/Render.
+A full-stack enterprise platform featuring decoupled **Next.js 15 (Frontend)** and **NestJS (Backend)** microservice architectures powered by **MongoDB Atlas** and **Mongoose ODM**.
 
 ---
 
-## Features & Modules
+## 🏗️ Project Architecture Overview
 
-### 1. Landing Page
-- Hero Section with interactive live WMS engine mockup
-- Feature Grid (Warehouse Management, Asset Tracking, Inventory Control, RBAC, Inbound/Outbound Engines, Reports)
-- Testimonials, FAQ Accordions, and Enterprise Footer
-
-### 2. Role-Based Access Control (RBAC) & Dynamic Sidebar
-- Dynamic sidebar navigation filtered strictly per user role
-- Live Role Context Switcher in header for instant demo/verification
-- Route protection middleware preventing unauthorized access
-
-### 3. Executive Control Center & Recharts Analytics
-- Real-time KPI stat cards (Warehouses, Assets, Stock Volume, Active Inbound/Outbound)
-- Area Chart: Monthly Inventory Stock & Capacity Utilization Trend
-- Horizontal Bar Chart: Warehouse Facility Occupancy Heatmap
-- Dual Bar Chart: Weekly Inbound vs Outbound Operational Volumes
-- Live activity stream log
-
-### 4. Company & Warehouse Hub
-- Super Admin CRUD for Company Entities (GST, Phone, Email, Address, Status, Warehouse Count)
-- Multi-warehouse network CRUD with capacity meters, Sq Ft area, rental cost, working hours, and facility manager assignment
-
-### 5. Asset Management & EAM Tracking
-- Equipment categories: Forklift, Scanner, Printer, Laptop, Desktop, Generator, Camera, Tools, Furniture, Other
-- Interactive QR & Barcode generator modal with instant print label capability
-- Audit log trail tracking movement history, maintenance checks, and employee assignments
-
-### 6. Inventory Control & Bin Location Register
-- SKU tracking down to Rack, Shelf, and Bin locations
-- Quantities tracking: Available, Reserved, Damaged, Min/Max stock thresholds
-- Safety re-order alerts banner for low stock items
-
-### 7. Visual Inbound Receiving Workflow Engine (9 Steps)
-`Vehicle Reporting` -> `Dock Allocation` -> `Unload` -> `Inspection` -> `Counting` -> `GRN Generation` -> `Staging` -> `Put Away` -> `Completed`
-- Operator assignment, timestamping, progress bars, and step remarks modal.
-
-### 8. Visual Outbound Dispatch Workflow Engine (7 Steps)
-`Invoice` -> `Picking` -> `Packing` -> `Staging` -> `Gate Pass` -> `Dispatch` -> `Completed`
-- Picking strategies: Case, Batch, Loose, Pallet, Box.
-
-### 9. Global Search Command Palette (`Ctrl+K`)
-- Instant hotkey command menu searching across Assets, Warehouses, Inventory SKUs, and Users.
-
-### 10. Enterprise Reports & Audit Center
-- 1-click export to PDF, Microsoft Excel (.xlsx), and CSV for Assets, Inventory, Warehouses, and Inbound GRNs.
-
----
-
-## Quick Start & Local Execution
-
-### 1. Prerequisites
-- Node.js v20+
-- PostgreSQL (or Docker)
-
-### 2. Environment Setup
-```bash
-cp .env.example .env
+```text
+Asset_WMS/
+├── frontend/                 # Next.js 15 App Router Frontend Project
+│   ├── src/                  # Components, Pages, State Store (Zustand), Hooks, UI
+│   ├── public/               # Static Assets & Icons
+│   ├── .env.local            # Frontend Environment Variables (API endpoints)
+│   ├── package.json          # Frontend Dependencies (Next.js, React 19, Tailwind)
+│   └── tsconfig.json         # Frontend TypeScript Configuration
+│
+├── backend/                  # NestJS REST Microservice Backend Project
+│   ├── src/                  # Controllers, Services, Schemas, Guards, Filters
+│   ├── .env                  # Backend Environment Variables (MongoDB URI, JWT Secret)
+│   ├── package.json          # Backend Dependencies (NestJS, Mongoose, Passport JWT)
+│   └── tsconfig.json         # Backend TypeScript Configuration
+│
+└── README.md                 # Project Setup & Developer Guide
 ```
 
-### 3. Install Dependencies
+---
+
+## ⚙️ Environment Variables Setup
+
+### 1. Backend Environment Setup (`backend/.env`)
+Create `backend/.env` (see `backend/.env.example`):
+```env
+MONGODB_URI="mongodb+srv://<username>:<password>@<cluster>.mongodb.net/ennea_wms?retryWrites=true&w=majority"
+JWT_SECRET="sankaj_logistics_enterprise_secret_key_2026_super_secure"
+JWT_EXPIRES_IN="7d"
+PORT=4000
+FRONTEND_URL="http://localhost:3000"
+```
+
+### 2. Frontend Environment Setup (`frontend/.env.local`)
+Create `frontend/.env.local` (see `frontend/.env.local.example`):
+```env
+NEXT_PUBLIC_API_URL="http://localhost:4000"
+NEXT_PUBLIC_APP_NAME="Sankaj Logistics Limited WMS"
+```
+
+---
+
+## 🚀 Running the Platform Locally
+
+### Running the Backend Service
 ```bash
+cd backend
 npm install
+npm run start:dev
 ```
+- **Backend API Server**: Runs on `http://localhost:4000`
+- **Swagger Documentation**: Available at `http://localhost:4000/api/docs`
 
-### 4. Database Setup & Seeding (PostgreSQL)
+### Running the Frontend App
 ```bash
-# Push Prisma schema to database
-npx prisma db push
-
-# Seed sample enterprise data
-npm run db:seed
-```
-
-### 5. Launch Development Server
-```bash
+cd frontend
+npm install
 npm run dev
 ```
-Open [http://localhost:3000](http://localhost:3000) to view the portal.
+- **Frontend Dashboard**: Accessible at `http://localhost:3000`
 
 ---
 
-## Docker Deployment
+## 🔐 Enterprise Features Built-in
 
-To run both PostgreSQL database and Next.js WMS engine via Docker Compose:
-```bash
-docker-compose up --build -d
-```
-
----
-
-## Default Demo Credentials
-
-| Role | Email | Password |
-| :--- | :--- | :--- |
-| **Super Admin** | `admin@ennea.com` | `password123` |
-| **Company Admin** | `deepak@sangkaj.com` | `password123` |
-| **Warehouse Manager** | `rajesh.sharma@sangkaj.com` | `password123` |
-| **Supervisor** | `priya.s@sangkaj.com` | `password123` |
-| **Inventory Exec** | `amit.verma@sangkaj.com` | `password123` |
-| **Picker** | `rohan.d@sangkaj.com` | `password123` |
-| **Packer** | `suresh.p@sangkaj.com` | `password123` |
-| **Viewer** | `viewer@ennea.com` | `password123` |
+1. **MongoDB Atlas & Mongoose ODM**: Complete document models with automated indexing for fast search.
+2. **Enterprise Approval Workflow Engine**: Multi-level maker-checker workflow visual designer, business rule engine, action modals, approval timelines, escalation logic, and notification bell system.
+3. **Automated Audit Logging**: Captures state-changing API operations into the `audit_logs` collection with diff tracking, IP, and User Agent details.
+4. **JWT Authentication & RBAC**: Passport JWT Bearer token authentication and fine-grained permissions matrix.
+5. **Rate Limiting & Error Sanitization**: Throttled requests to prevent brute-force attacks and centralized exception filters to redact sensitive keys.
